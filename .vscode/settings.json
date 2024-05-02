@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "new": "cpp",
+        "iostream": "cpp",
+        "vector": "cpp",
+        "iosfwd": "cpp",
+        "random": "cpp",
+        "chrono": "cpp",
+        "bitset": "cpp",
+        "ostream": "cpp",
+        "optional": "cpp",
+        "variant": "cpp",
+        "__locale": "cpp",
+        "ios": "cpp",
+        "cstdlib": "cpp"
+    }
+}
