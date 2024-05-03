@@ -7,7 +7,7 @@ import chisel3.util.experimental.{loadMemoryFromFile,loadMemoryFromFileInline}
 
 class RegFile() {
   val rf = Mem(NRReg, UInt(XLEN.W))
-  loadMemoryFromFileInline(rf, "../../../test/modelsim/src/matrix_src.txt")
+//  loadMemoryFromFileInline(rf, "../../../test/modelsim/src/matrix_src.txt")
   def read(addr: UInt): UInt = Mux(addr === 0.U, 0.U, rf(addr))
   def write(addr: UInt, data: UInt) = {
     rf(addr) := data(XLEN - 1, 0)

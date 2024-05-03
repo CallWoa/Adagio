@@ -32156,12 +32156,6 @@
     "targetDir":"generated"
   },
   {
-    "class":"firrtl.annotations.MemoryFileInlineAnnotation",
-    "target":"~System|System>rf",
-    "filename":"../../../test/modelsim/src/matrix_src.txt",
-    "hexOrBinary":"h"
-  },
-  {
     "class":"firrtl.transforms.CombinationalPath",
     "sink":"~System|System>io_out_valid",
     "sources":[

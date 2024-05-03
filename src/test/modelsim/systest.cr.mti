@@ -1,0 +1,62 @@
+D:/gradProj/Adagio/generated/System.v {1 {vlog -work work -vopt -cover sbce3 -stats=none D:/gradProj/Adagio/generated/System.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module LZC
+-- Compiling module FMULnoRound
+-- Compiling module LZC_8
+-- Compiling module FPUpConverter
+-- Compiling module ShiftRightJam
+-- Compiling module RoundingUnit
+-- Compiling module TininessRounder
+-- Compiling module FarPath
+-- Compiling module PreEncoder
+-- Compiling module node
+-- Compiling module ErrorDetector
+-- Compiling module LZC_9
+-- Compiling module LZA
+-- Compiling module ClosePath
+-- Compiling module FADD
+-- Compiling module RoundingUnit_16
+-- Compiling module ShiftRightJam_4
+-- Compiling module FPDownConverter
+-- Compiling module DotProdUnit
+-- Compiling module Threadgroup
+-- Compiling module Octet
+-- Compiling module TensorCore
+-- Compiling module Top
+-- Compiling module System
+
+Top level modules:
+	System
+
+} {} {}} D:/gradProj/Adagio/src/test/modelsim/systest.v {1 {vlog -work work -vopt -cover sbce3 -stats=none D:/gradProj/Adagio/src/test/modelsim/systest.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module LZC
+-- Compiling module FMULnoRound
+-- Compiling module LZC_8
+-- Compiling module FPUpConverter
+-- Compiling module ShiftRightJam
+-- Compiling module RoundingUnit
+-- Compiling module TininessRounder
+-- Compiling module FarPath
+-- Compiling module PreEncoder
+-- Compiling module node
+-- Compiling module ErrorDetector
+-- Compiling module LZC_9
+-- Compiling module LZA
+-- Compiling module ClosePath
+-- Compiling module FADD
+-- Compiling module RoundingUnit_16
+-- Compiling module ShiftRightJam_4
+-- Compiling module FPDownConverter
+-- Compiling module DotProdUnit
+-- Compiling module Threadgroup
+-- Compiling module Octet
+-- Compiling module TensorCore
+-- Compiling module Top
+-- Compiling module System
+-- Compiling module systest
+
+Top level modules:
+	systest
+
+} {} {}}
