@@ -1,190 +1,156 @@
 package System
+
 import chisel3._
 import chisel3.util._
 
-class UART_rx (
-                bitRate: Int = 115200,
-                clkFreq: Int = 16000000,
-                payloadBits: Int = 8
-              ) extends Module {
-  val io = IO(new Bundle() {
-    val i_serial_data = Input(Bool())
-    val o_rx_done = Output(Bool())
-    val o_data = Output(UInt(payloadBits.W))
+class Channel extends Bundle {
+  val data = Input(Bits(8.W))
+  val ready = Output(Bool())
+  val valid = Input(Bool())
+}
+
+//Single Bye Buffer
+class Buffer extends Module {
+  val io = IO(new Bundle {
+    val in = new Channel()
+    val out = Flipped(new Channel())
   })
 
-  val clksPerBit = clkFreq / bitRate          // clocks per bit (CPB)
-  val clkCnterBW = log2Ceil(clksPerBit) + 1   // bit width for clkCnterReg
-  val bitCnterBW = log2Ceil(payloadBits) + 1  // bit width for bitCnterReg
+  val empty :: full :: Nil = Enum(2)
+  val stateReg = RegInit(empty)
+  val dataReg = RegInit(0.U(8.W))
 
-  // fsm states
-  val idle :: startBit :: dataBits :: stopBit :: Nil = Enum(4)
+  io.in.ready  := stateReg === empty
+  io.out.valid := stateReg === full
 
-  val clkCnterReg = RegInit(0.U(clkCnterBW.W))  // counting clk edges
-  val bitCnterReg = RegInit(0.U(bitCnterBW.W))  // counting bits transmitted
+  when (stateReg === empty) {
+    when (io.in.valid) {
+      dataReg := io.in.data
+      stateReg := full
+    }
+  } .otherwise {
+    when (io.out.ready) {
+      stateReg := empty
+    }
+  }
+  io.out.data := dataReg
+}
+class Tx(sysclk: Int, baudRate: Int) extends Module {
+  val io = IO(new Bundle {
+    val txd = Output(Bits(1.W))
+    val channel = new Channel()
+  })
+  val BIT_CNT = ((sysclk + baudRate/2)/baudRate -1).asUInt
+  val shiftReg = RegInit(0x7ff.U)
+  val cntReg = RegInit(0.U(20.W))
+  val bitsReg = RegInit(0.U(4.W))
 
-  val outDataReg = RegInit(VecInit(Seq.fill(payloadBits)(false.B))) // output data reg
-  val outRxDoneReg = RegInit(false.B)              // output rx done reg
-  val stateReg = RegInit(idle)                  // fsm state reg
+  io.channel.ready := (cntReg === 0.U) && (bitsReg === 0.U)
+  io.txd := shiftReg(0)
 
-  // input serial data synchronized to clk domain
-  val serialDataReg = RegNext(RegNext(io.i_serial_data))
-
-  io.o_data := Cat(outDataReg.reverse)
-  io.o_rx_done := outRxDoneReg
-
-  switch (stateReg) {
-    is (idle) {
-      outRxDoneReg := false.B
-      // counters disabled
-      clkCnterReg := 0.U(clkCnterBW.W)
-      bitCnterReg := 0.U(bitCnterBW.W)
-      // if serial input data low, go to startBit
-      when (serialDataReg === false.B) {
-        stateReg := startBit
+  when (cntReg === 0.U) {
+    cntReg := BIT_CNT
+    when (bitsReg =/= 0.U) {
+      val shift = shiftReg >> 1
+      shiftReg := Cat(1.U, shift(9,0))
+      bitsReg := bitsReg - 1.U
+    } .otherwise {
+      when (io.channel.valid) {
+        //2 Stop Bits , Data , Start
+        shiftReg := Cat(Cat(3.U, io.channel.data), 0.U)
+        bitsReg := 11.U
       } .otherwise {
-        stateReg := idle
+        shiftReg := 0x7ff.U
       }
     }
-    is (startBit) {
-      when (clkCnterReg < (clksPerBit / 2).U) {
-        clkCnterReg := clkCnterReg + 1.U
-        stateReg := startBit
-      } .otherwise {
-        // we are at the middle of start bit
-        clkCnterReg := 0.U(clkCnterBW.W)
-        when (serialDataReg === false.B) {
-          stateReg := dataBits
-        } .otherwise {
-          // treat as noise and go back to idle
-          stateReg := idle
-        }
-      }
-    }
-    is (dataBits) {
-      when (clkCnterReg < clksPerBit.U) {
-        clkCnterReg := clkCnterReg + 1.U
-      } .otherwise {
-        clkCnterReg := 0.U(clkCnterBW.W)
-        // we are at the middle of a data bit
-        // grab data bit and update bitCnterReg
-        outDataReg(bitCnterReg) := serialDataReg
-        when (bitCnterReg < payloadBits.U) {
-          bitCnterReg := bitCnterReg + 1.U
-        } .otherwise {
-          bitCnterReg := 0.U(bitCnterBW.W)
-        }
-      }
-      when (bitCnterReg === payloadBits.U) {
-        stateReg := stopBit
-      } .otherwise {
-        stateReg := dataBits
-      }
-    }
-    is (stopBit) {
-      when (clkCnterReg < clksPerBit.U) {
-        clkCnterReg := clkCnterReg + 1.U
-        stateReg := stopBit
-      } .otherwise {
-        clkCnterReg := 0.U(clkCnterBW.W)
-        // we are at the middle of stop bit
-        outRxDoneReg := true.B
-        stateReg := idle
-      }
-    }
+  } .otherwise {
+    cntReg := cntReg - 1.U
   }
 }
 
-class UART_tx (
-                bitRate: Int = 115200,
-                clkFreq: Int = 10000000,
-                payloadBits: Int = 8
-              ) extends Module {
-  val io = IO(new Bundle() {
-    val i_tx_trig = Input(Bool())
-    val i_data = Input(UInt(payloadBits.W))
-    val o_tx_busy = Output(Bool())
-    val o_tx_done = Output(Bool())
-    val o_serial_data = Output(Bool())
+class BufferTx(sysclk: Int, baudRate: Int) extends Module {
+  val io = IO(new Bundle {
+    val txd = Output(Bits(1.W))
+    val channel = new Channel()
   })
+  val tx = Module(new Tx(sysclk, baudRate))
+  val buf = Module(new Buffer())
 
-  val clksPerBit = clkFreq / bitRate          // clocks per bit (CPB)
-  val clkCnterBW = log2Ceil(clksPerBit) + 1   // bit width for clkCnterReg
-  val bitCnterBW = log2Ceil(payloadBits) + 1  // bit width for bitCnterReg
+  buf.io.in <> io.channel
+  tx.io.channel <> buf.io.out
+  io.txd <> tx.io.txd
+}
 
-  // fsm states
-  val idle :: startBit :: dataBits :: stopBit :: Nil = Enum(4)
+class Sender(sysclk: Int, baudRate: Int) extends Module {
+  val io = IO(new Bundle {
+    val txd = Output(Bits(1.W))
+  })
+  val tx = Module(new BufferTx(sysclk, baudRate))
+  io.txd := tx.io.txd
 
-  val clkCnterReg = RegInit(0.U(clkCnterBW.W))  // counting clk edges
-  val bitCnterReg = RegInit(0.U(bitCnterBW.W))  // counting bits transmitted
+  val msg = "Hello World"
+  val text = VecInit(msg.map(_.U))
+  val len = msg.length.U
+  val cntReg = RegInit(0.U(8.W))
 
-  val inDataReg = RegInit(0.U(payloadBits.W))   // input data reg
-  val outDataReg = RegInit(true.B)             // output data reg
-  val outTxBusyReg = RegInit(false.B)              // output tx busy reg
-  val outTxDoneReg = RegInit(false.B)              // output tx done reg
-  val stateReg = RegInit(idle)                  // fsm state reg
-
-  io.o_serial_data := outDataReg
-  io.o_tx_busy := outTxBusyReg
-  io.o_tx_done := outTxDoneReg
-  outTxBusyReg := stateReg =/= idle
-
-  switch (stateReg) {
-    is (idle) {
-      outTxDoneReg := false.B
-      // counters disabled
-      clkCnterReg := 0.U(clkCnterBW.W)
-      bitCnterReg := 0.U(bitCnterBW.W)
-      // if trigger signal high, transmit start bit and reg input data, go to startBit
-      when (io.i_tx_trig === true.B) {
-        outDataReg := false.B
-        // register input data at the beginning of transmission
-        inDataReg := io.i_data
-        stateReg := startBit
-      } .otherwise {
-        stateReg := idle
-      }
-    }
-    is (startBit) {
-      when (clkCnterReg < clksPerBit.U) {
-        clkCnterReg := clkCnterReg + 1.U
-        stateReg := startBit
-      } .otherwise {
-        clkCnterReg := 0.U(clkCnterBW.W)
-        bitCnterReg := bitCnterReg + 1.U
-        // transmit first data bit
-        outDataReg := inDataReg(bitCnterReg)
-        stateReg := dataBits
-      }
-    }
-    is (dataBits) {
-      when (clkCnterReg < clksPerBit.U) {
-        clkCnterReg := clkCnterReg + 1.U
-        stateReg := dataBits
-      } .otherwise {
-        clkCnterReg := 0.U(clkCnterBW.W)
-        when (bitCnterReg < payloadBits.U) {
-          // transmit next data bit
-          outDataReg := inDataReg(bitCnterReg)
-          bitCnterReg := bitCnterReg + 1.U
-          stateReg := dataBits
-        } .otherwise {
-          bitCnterReg := 0.U(bitCnterBW.W)
-          // transmit stop bit
-          outDataReg := true.B
-          stateReg := stopBit
-        }
-      }
-    }
-    is (stopBit) {
-      when (clkCnterReg < clksPerBit.U) {
-        clkCnterReg := clkCnterReg + 1.U
-        stateReg := stopBit
-      } .otherwise {
-        clkCnterReg := 0.U(clkCnterBW.W)
-        outTxDoneReg := true.B
-        stateReg := idle
-      }
-    }
+  tx.io.channel.data := text(cntReg)
+  tx.io.channel.valid := cntReg =/= len
+  when (tx.io.channel.ready && cntReg =/= len) {
+    cntReg := cntReg + 1.U
   }
 }
+class Rx(sysclk: Int, baudRate: Int) extends Module {
+  val io = IO(new Bundle {
+    val rxd = Input(Bits(1.W))
+    val channel = Flipped(new Channel())
+  })
+  val BIT_CNT = ((sysclk + baudRate/2)/baudRate -1).asUInt
+  val START_CNT = ((3*sysclk/2 + baudRate/2)/baudRate - 1).asUInt
+
+  //Sync the Input rxd
+  val rxReg = RegNext(RegNext(io.rxd, 1.U), 1.U)
+  val shiftReg = RegInit('A'.U(8.W))
+  val cntReg = RegInit(0.U(20.W))
+  val bitsReg = RegInit(0.U(4.W))
+  val valReg = RegInit(false.B)
+
+  when (cntReg =/= 0.U) {
+    cntReg := cntReg - 1.U
+  } .elsewhen (bitsReg =/= 0.U) {
+    cntReg := BIT_CNT
+    shiftReg := Cat(rxReg, shiftReg >> 1)
+    bitsReg := bitsReg - 1.U
+    when (bitsReg === 1.U) {
+      valReg := true.B
+    }
+    //Start Wait
+  } .elsewhen( rxReg === 0.U) {
+    cntReg := START_CNT
+    bitsReg := 8.U
+  }
+
+  when (valReg && io.channel.ready) {
+    valReg := false.B
+  }
+
+  io.channel.data := shiftReg
+  io.channel.valid := valReg
+}
+
+class Echo(sysclk: Int, baudRate: Int) extends Module {
+  val io = IO(new Bundle {
+    val txd = Output(Bits(1.W))
+    val rxd = Input(Bits(1.W))
+  })
+
+  val tx = Module(new BufferTx(sysclk, baudRate))
+  val rx = Module(new Rx(sysclk, baudRate))
+  io.txd := tx.io.txd
+  rx.io.rxd := io.rxd
+  tx.io.channel <> rx.io.channel
+}
+
+object Echo_t extends App {
+  emitVerilog(new Echo(50000000, 115200), Array("--target-dir", "generated"))
+}
+

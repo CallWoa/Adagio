@@ -32156,10 +32156,17 @@
     "targetDir":"generated"
   },
   {
+    "class":"firrtl.annotations.MemoryFileInlineAnnotation",
+    "target":"~System|System>rf",
+    "filename":"./src/matrix_src.txt",
+    "hexOrBinary":"h"
+  },
+  {
     "class":"firrtl.transforms.CombinationalPath",
     "sink":"~System|System>io_out_valid",
     "sources":[
-      "~System|System>io_out_ready"
+      "~System|System>io_out_ready",
+      "~System|System>io_mixPc"
     ]
   }
 ]
