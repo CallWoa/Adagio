@@ -40,7 +40,8 @@ class Tx(sysclk: Int, baudRate: Int) extends Module {
     val txd = Output(Bits(1.W))
     val channel = new Channel()
   })
-  val BIT_CNT = ((sysclk + baudRate/2)/baudRate -1).asUInt
+//  val BIT_CNT = ((sysclk + baudRate/2)/baudRate -1).asUInt
+  val BIT_CNT = (sysclk/baudRate -1).asUInt
   val shiftReg = RegInit(0x7ff.U)
   val cntReg = RegInit(0.U(20.W))
   val bitsReg = RegInit(0.U(4.W))
@@ -104,9 +105,10 @@ class Rx(sysclk: Int, baudRate: Int) extends Module {
     val rxd = Input(Bits(1.W))
     val channel = Flipped(new Channel())
   })
-  val BIT_CNT = ((sysclk + baudRate/2)/baudRate -1).asUInt
-  val START_CNT = ((3*sysclk/2 + baudRate/2)/baudRate - 1).asUInt
-
+//  val BIT_CNT = ((sysclk + baudRate/2)/baudRate -1).asUInt
+//  val START_CNT = ((3*sysclk/2 + baudRate/2)/baudRate - 1).asUInt
+  val BIT_CNT = (sysclk / baudRate - 1).asUInt
+  val START_CNT = (3 * sysclk / 2 / baudRate - 1).asUInt
   //Sync the Input rxd
   val rxReg = RegNext(RegNext(io.rxd, 1.U), 1.U)
   val shiftReg = RegInit('A'.U(8.W))

@@ -11,43 +11,43 @@ module Tx(
   reg [31:0] _RAND_1;
   reg [31:0] _RAND_2;
 `endif // RANDOMIZE_REG_INIT
-  reg [10:0] shiftReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 44:25]
-  reg [19:0] cntReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 45:23]
-  reg [3:0] bitsReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 46:24]
-  wire  _io_channel_ready_T = cntReg == 20'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 48:31]
-  wire [9:0] shift = shiftReg[10:1]; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 54:28]
-  wire [10:0] _shiftReg_T_1 = {1'h1,shift}; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 55:22]
-  wire [3:0] _bitsReg_T_1 = bitsReg - 4'h1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:26]
-  wire [10:0] _shiftReg_T_3 = {2'h3,io_channel_data,1'h0}; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 60:24]
-  wire [19:0] _cntReg_T_1 = cntReg - 20'h1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 67:22]
-  assign io_txd = shiftReg[0]; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 49:21]
-  assign io_channel_ready = cntReg == 20'h0 & bitsReg == 4'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 48:40]
+  reg [10:0] shiftReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 45:25]
+  reg [19:0] cntReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 46:23]
+  reg [3:0] bitsReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 47:24]
+  wire  _io_channel_ready_T = cntReg == 20'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 49:31]
+  wire [9:0] shift = shiftReg[10:1]; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 55:28]
+  wire [10:0] _shiftReg_T_1 = {1'h1,shift}; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:22]
+  wire [3:0] _bitsReg_T_1 = bitsReg - 4'h1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 57:26]
+  wire [10:0] _shiftReg_T_3 = {2'h3,io_channel_data,1'h0}; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 61:24]
+  wire [19:0] _cntReg_T_1 = cntReg - 20'h1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 68:22]
+  assign io_txd = shiftReg[0]; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 50:21]
+  assign io_channel_ready = cntReg == 20'h0 & bitsReg == 4'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 49:40]
   always @(posedge clock) begin
-    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 44:25]
-      shiftReg <= 11'h7ff; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 44:25]
-    end else if (_io_channel_ready_T) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 51:25]
-      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 53:28]
-        shiftReg <= _shiftReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 55:16]
-      end else if (io_channel_valid) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 58:31]
-        shiftReg <= _shiftReg_T_3; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 60:18]
+    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 45:25]
+      shiftReg <= 11'h7ff; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 45:25]
+    end else if (_io_channel_ready_T) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 52:25]
+      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 54:28]
+        shiftReg <= _shiftReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:16]
+      end else if (io_channel_valid) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 59:31]
+        shiftReg <= _shiftReg_T_3; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 61:18]
       end else begin
-        shiftReg <= 11'h7ff; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 63:18]
+        shiftReg <= 11'h7ff; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 64:18]
       end
     end
-    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 45:23]
-      cntReg <= 20'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 45:23]
-    end else if (_io_channel_ready_T) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 51:25]
-      cntReg <= 20'h1b1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 52:12]
+    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 46:23]
+      cntReg <= 20'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 46:23]
+    end else if (_io_channel_ready_T) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 52:25]
+      cntReg <= 20'h1b1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 53:12]
     end else begin
-      cntReg <= _cntReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 67:12]
+      cntReg <= _cntReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 68:12]
     end
-    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 46:24]
-      bitsReg <= 4'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 46:24]
-    end else if (_io_channel_ready_T) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 51:25]
-      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 53:28]
-        bitsReg <= _bitsReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:15]
-      end else if (io_channel_valid) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 58:31]
-        bitsReg <= 4'hb; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 61:17]
+    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 47:24]
+      bitsReg <= 4'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 47:24]
+    end else if (_io_channel_ready_T) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 52:25]
+      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 54:28]
+        bitsReg <= _bitsReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 57:15]
+      end else if (io_channel_valid) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 59:31]
+        bitsReg <= 4'hb; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 62:17]
       end
     end
   end
@@ -189,26 +189,26 @@ endmodule
 module BufferTx(
   input        clock,
   input        reset,
-  output       io_txd, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 72:14]
-  input  [7:0] io_channel_data, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 72:14]
-  output       io_channel_ready, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 72:14]
-  input        io_channel_valid // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 72:14]
+  output       io_txd, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 73:14]
+  input  [7:0] io_channel_data, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 73:14]
+  output       io_channel_ready, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 73:14]
+  input        io_channel_valid // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 73:14]
 );
-  wire  tx_clock; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 76:18]
-  wire  tx_reset; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 76:18]
-  wire  tx_io_txd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 76:18]
-  wire [7:0] tx_io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 76:18]
-  wire  tx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 76:18]
-  wire  tx_io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 76:18]
-  wire  buf__clock; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
-  wire  buf__reset; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
-  wire [7:0] buf__io_in_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
-  wire  buf__io_in_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
-  wire  buf__io_in_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
-  wire [7:0] buf__io_out_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
-  wire  buf__io_out_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
-  wire  buf__io_out_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
-  Tx tx ( // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 76:18]
+  wire  tx_clock; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:18]
+  wire  tx_reset; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:18]
+  wire  tx_io_txd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:18]
+  wire [7:0] tx_io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:18]
+  wire  tx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:18]
+  wire  tx_io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:18]
+  wire  buf__clock; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
+  wire  buf__reset; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
+  wire [7:0] buf__io_in_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
+  wire  buf__io_in_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
+  wire  buf__io_in_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
+  wire [7:0] buf__io_out_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
+  wire  buf__io_out_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
+  wire  buf__io_out_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
+  Tx tx ( // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:18]
     .clock(tx_clock),
     .reset(tx_reset),
     .io_txd(tx_io_txd),
@@ -216,7 +216,7 @@ module BufferTx(
     .io_channel_ready(tx_io_channel_ready),
     .io_channel_valid(tx_io_channel_valid)
   );
-  Buffer buf_ ( // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
+  Buffer buf_ ( // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
     .clock(buf__clock),
     .reset(buf__reset),
     .io_in_data(buf__io_in_data),
@@ -226,25 +226,25 @@ module BufferTx(
     .io_out_ready(buf__io_out_ready),
     .io_out_valid(buf__io_out_valid)
   );
-  assign io_txd = tx_io_txd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 81:10]
-  assign io_channel_ready = buf__io_in_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 79:13]
+  assign io_txd = tx_io_txd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 82:10]
+  assign io_channel_ready = buf__io_in_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:13]
   assign tx_clock = clock;
   assign tx_reset = reset;
-  assign tx_io_channel_data = buf__io_out_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:17]
-  assign tx_io_channel_valid = buf__io_out_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:17]
+  assign tx_io_channel_data = buf__io_out_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 81:17]
+  assign tx_io_channel_valid = buf__io_out_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 81:17]
   assign buf__clock = clock;
   assign buf__reset = reset;
-  assign buf__io_in_data = io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 79:13]
-  assign buf__io_in_valid = io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 79:13]
-  assign buf__io_out_ready = tx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:17]
+  assign buf__io_in_data = io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:13]
+  assign buf__io_in_valid = io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:13]
+  assign buf__io_out_ready = tx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 81:17]
 endmodule
 module Rx(
   input        clock,
   input        reset,
-  input        io_rxd, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 103:14]
-  output [7:0] io_channel_data, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 103:14]
-  input        io_channel_ready, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 103:14]
-  output       io_channel_valid // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 103:14]
+  input        io_rxd, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 104:14]
+  output [7:0] io_channel_data, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 104:14]
+  input        io_channel_ready, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 104:14]
+  output       io_channel_valid // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 104:14]
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -254,52 +254,52 @@ module Rx(
   reg [31:0] _RAND_4;
   reg [31:0] _RAND_5;
 `endif // RANDOMIZE_REG_INIT
-  reg  rxReg_REG; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 111:30]
-  reg  rxReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 111:22]
-  reg [7:0] shiftReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 112:25]
-  reg [19:0] cntReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:23]
-  reg [3:0] bitsReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 114:24]
-  reg  valReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 115:23]
-  wire [19:0] _cntReg_T_1 = cntReg - 20'h1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 118:22]
-  wire [7:0] _shiftReg_T_1 = {rxReg,shiftReg[7:1]}; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:20]
-  wire [3:0] _bitsReg_T_1 = bitsReg - 4'h1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 122:24]
-  wire  _GEN_0 = bitsReg == 4'h1 | valReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 123:28 124:14 115:23]
-  assign io_channel_data = shiftReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 136:19]
-  assign io_channel_valid = valReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 137:20]
+  reg  rxReg_REG; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:30]
+  reg  rxReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:22]
+  reg [7:0] shiftReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 114:25]
+  reg [19:0] cntReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 115:23]
+  reg [3:0] bitsReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 116:24]
+  reg  valReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:23]
+  wire [19:0] _cntReg_T_1 = cntReg - 20'h1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 120:22]
+  wire [7:0] _shiftReg_T_1 = {rxReg,shiftReg[7:1]}; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 123:20]
+  wire [3:0] _bitsReg_T_1 = bitsReg - 4'h1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 124:24]
+  wire  _GEN_0 = bitsReg == 4'h1 | valReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 125:28 126:14 117:23]
+  assign io_channel_data = shiftReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 138:19]
+  assign io_channel_valid = valReg; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 139:20]
   always @(posedge clock) begin
-    rxReg_REG <= reset | io_rxd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 111:{30,30,30}]
-    rxReg <= reset | rxReg_REG; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 111:{22,22,22}]
-    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 112:25]
-      shiftReg <= 8'h41; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 112:25]
-    end else if (!(cntReg != 20'h0)) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:25]
-      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:33]
-        shiftReg <= _shiftReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:14]
-      end
-    end
-    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:23]
-      cntReg <= 20'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:23]
-    end else if (cntReg != 20'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:25]
-      cntReg <= _cntReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 118:12]
-    end else if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:33]
-      cntReg <= 20'h1b1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 120:12]
-    end else if (~rxReg) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 127:31]
-      cntReg <= 20'h28a; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 128:12]
-    end
-    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 114:24]
-      bitsReg <= 4'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 114:24]
-    end else if (!(cntReg != 20'h0)) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:25]
-      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:33]
-        bitsReg <= _bitsReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 122:13]
-      end else if (~rxReg) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 127:31]
-        bitsReg <= 4'h8; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 129:13]
+    rxReg_REG <= reset | io_rxd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:{30,30,30}]
+    rxReg <= reset | rxReg_REG; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:{22,22,22}]
+    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 114:25]
+      shiftReg <= 8'h41; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 114:25]
+    end else if (!(cntReg != 20'h0)) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:25]
+      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:33]
+        shiftReg <= _shiftReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 123:14]
       end
     end
     if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 115:23]
-      valReg <= 1'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 115:23]
-    end else if (valReg & io_channel_ready) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 132:37]
-      valReg <= 1'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 133:12]
-    end else if (!(cntReg != 20'h0)) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:25]
-      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:33]
+      cntReg <= 20'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 115:23]
+    end else if (cntReg != 20'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:25]
+      cntReg <= _cntReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 120:12]
+    end else if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:33]
+      cntReg <= 20'h1b1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 122:12]
+    end else if (~rxReg) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 129:31]
+      cntReg <= 20'h28a; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 130:12]
+    end
+    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 116:24]
+      bitsReg <= 4'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 116:24]
+    end else if (!(cntReg != 20'h0)) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:25]
+      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:33]
+        bitsReg <= _bitsReg_T_1; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 124:13]
+      end else if (~rxReg) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 129:31]
+        bitsReg <= 4'h8; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 131:13]
+      end
+    end
+    if (reset) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:23]
+      valReg <= 1'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:23]
+    end else if (valReg & io_channel_ready) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 134:37]
+      valReg <= 1'h0; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 135:12]
+    end else if (!(cntReg != 20'h0)) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:25]
+      if (bitsReg != 4'h0) begin // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:33]
         valReg <= _GEN_0;
       end
     end
@@ -363,22 +363,22 @@ endmodule
 module Echo(
   input   clock,
   input   reset,
-  output  io_txd, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 141:14]
-  input   io_rxd // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 141:14]
+  output  io_txd, // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 143:14]
+  input   io_rxd // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 143:14]
 );
-  wire  tx_clock; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 146:18]
-  wire  tx_reset; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 146:18]
-  wire  tx_io_txd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 146:18]
-  wire [7:0] tx_io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 146:18]
-  wire  tx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 146:18]
-  wire  tx_io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 146:18]
-  wire  rx_clock; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 147:18]
-  wire  rx_reset; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 147:18]
-  wire  rx_io_rxd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 147:18]
-  wire [7:0] rx_io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 147:18]
-  wire  rx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 147:18]
-  wire  rx_io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 147:18]
-  BufferTx tx ( // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 146:18]
+  wire  tx_clock; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:18]
+  wire  tx_reset; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:18]
+  wire  tx_io_txd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:18]
+  wire [7:0] tx_io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:18]
+  wire  tx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:18]
+  wire  tx_io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:18]
+  wire  rx_clock; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:18]
+  wire  rx_reset; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:18]
+  wire  rx_io_rxd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:18]
+  wire [7:0] rx_io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:18]
+  wire  rx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:18]
+  wire  rx_io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:18]
+  BufferTx tx ( // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:18]
     .clock(tx_clock),
     .reset(tx_reset),
     .io_txd(tx_io_txd),
@@ -386,7 +386,7 @@ module Echo(
     .io_channel_ready(tx_io_channel_ready),
     .io_channel_valid(tx_io_channel_valid)
   );
-  Rx rx ( // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 147:18]
+  Rx rx ( // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:18]
     .clock(rx_clock),
     .reset(rx_reset),
     .io_rxd(rx_io_rxd),
@@ -394,13 +394,13 @@ module Echo(
     .io_channel_ready(rx_io_channel_ready),
     .io_channel_valid(rx_io_channel_valid)
   );
-  assign io_txd = tx_io_txd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:10]
+  assign io_txd = tx_io_txd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 150:10]
   assign tx_clock = clock;
   assign tx_reset = reset;
-  assign tx_io_channel_data = rx_io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 150:17]
-  assign tx_io_channel_valid = rx_io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 150:17]
+  assign tx_io_channel_data = rx_io_channel_data; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 152:17]
+  assign tx_io_channel_valid = rx_io_channel_valid; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 152:17]
   assign rx_clock = clock;
   assign rx_reset = reset;
-  assign rx_io_rxd = io_rxd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:13]
-  assign rx_io_channel_ready = tx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 150:17]
+  assign rx_io_rxd = io_rxd; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 151:13]
+  assign rx_io_channel_ready = tx_io_channel_ready; // @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 152:17]
 endmodule

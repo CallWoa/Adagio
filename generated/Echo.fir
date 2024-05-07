@@ -6,41 +6,41 @@ circuit Echo :
     output io : { txd : UInt<1>, channel : { flip data : UInt<8>, ready : UInt<1>, flip valid : UInt<1>}} @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 39:14]
 
     reg shiftReg : UInt, clock with :
-      reset => (reset, UInt<11>("h7ff")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 44:25]
+      reset => (reset, UInt<11>("h7ff")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 45:25]
     reg cntReg : UInt<20>, clock with :
-      reset => (reset, UInt<20>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 45:23]
+      reset => (reset, UInt<20>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 46:23]
     reg bitsReg : UInt<4>, clock with :
-      reset => (reset, UInt<4>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 46:24]
-    node _io_channel_ready_T = eq(cntReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 48:31]
-    node _io_channel_ready_T_1 = eq(bitsReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 48:52]
-    node _io_channel_ready_T_2 = and(_io_channel_ready_T, _io_channel_ready_T_1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 48:40]
-    io.channel.ready <= _io_channel_ready_T_2 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 48:20]
-    node _io_txd_T = bits(shiftReg, 0, 0) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 49:21]
-    io.txd <= _io_txd_T @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 49:10]
-    node _T = eq(cntReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 51:16]
-    when _T : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 51:25]
-      cntReg <= UInt<9>("h1b1") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 52:12]
-      node _T_1 = neq(bitsReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 53:19]
-      when _T_1 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 53:28]
-        node shift = shr(shiftReg, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 54:28]
-        node _shiftReg_T = bits(shift, 9, 0) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 55:33]
-        node _shiftReg_T_1 = cat(UInt<1>("h1"), _shiftReg_T) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 55:22]
-        shiftReg <= _shiftReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 55:16]
-        node _bitsReg_T = sub(bitsReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:26]
-        node _bitsReg_T_1 = tail(_bitsReg_T, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:26]
-        bitsReg <= _bitsReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:15]
+      reset => (reset, UInt<4>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 47:24]
+    node _io_channel_ready_T = eq(cntReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 49:31]
+    node _io_channel_ready_T_1 = eq(bitsReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 49:52]
+    node _io_channel_ready_T_2 = and(_io_channel_ready_T, _io_channel_ready_T_1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 49:40]
+    io.channel.ready <= _io_channel_ready_T_2 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 49:20]
+    node _io_txd_T = bits(shiftReg, 0, 0) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 50:21]
+    io.txd <= _io_txd_T @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 50:10]
+    node _T = eq(cntReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 52:16]
+    when _T : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 52:25]
+      cntReg <= UInt<9>("h1b1") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 53:12]
+      node _T_1 = neq(bitsReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 54:19]
+      when _T_1 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 54:28]
+        node shift = shr(shiftReg, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 55:28]
+        node _shiftReg_T = bits(shift, 9, 0) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:33]
+        node _shiftReg_T_1 = cat(UInt<1>("h1"), _shiftReg_T) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:22]
+        shiftReg <= _shiftReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 56:16]
+        node _bitsReg_T = sub(bitsReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 57:26]
+        node _bitsReg_T_1 = tail(_bitsReg_T, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 57:26]
+        bitsReg <= _bitsReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 57:15]
       else :
-        when io.channel.valid : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 58:31]
-          node _shiftReg_T_2 = cat(UInt<2>("h3"), io.channel.data) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 60:28]
-          node _shiftReg_T_3 = cat(_shiftReg_T_2, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 60:24]
-          shiftReg <= _shiftReg_T_3 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 60:18]
-          bitsReg <= UInt<4>("hb") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 61:17]
+        when io.channel.valid : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 59:31]
+          node _shiftReg_T_2 = cat(UInt<2>("h3"), io.channel.data) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 61:28]
+          node _shiftReg_T_3 = cat(_shiftReg_T_2, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 61:24]
+          shiftReg <= _shiftReg_T_3 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 61:18]
+          bitsReg <= UInt<4>("hb") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 62:17]
         else :
-          shiftReg <= UInt<11>("h7ff") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 63:18]
+          shiftReg <= UInt<11>("h7ff") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 64:18]
     else :
-      node _cntReg_T = sub(cntReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 67:22]
-      node _cntReg_T_1 = tail(_cntReg_T, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 67:22]
-      cntReg <= _cntReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 67:12]
+      node _cntReg_T = sub(cntReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 68:22]
+      node _cntReg_T_1 = tail(_cntReg_T, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 68:22]
+      cntReg <= _cntReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 68:12]
 
 
   module Buffer :
@@ -69,80 +69,80 @@ circuit Echo :
   module BufferTx :
     input clock : Clock
     input reset : Reset
-    output io : { txd : UInt<1>, channel : { flip data : UInt<8>, ready : UInt<1>, flip valid : UInt<1>}} @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 72:14]
+    output io : { txd : UInt<1>, channel : { flip data : UInt<8>, ready : UInt<1>, flip valid : UInt<1>}} @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 73:14]
 
-    inst tx of Tx @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 76:18]
+    inst tx of Tx @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:18]
     tx.clock <= clock
     tx.reset <= reset
-    inst buf of Buffer @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 77:19]
+    inst buf of Buffer @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 78:19]
     buf.clock <= clock
     buf.reset <= reset
-    buf.io.in.valid <= io.channel.valid @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 79:13]
-    io.channel.ready <= buf.io.in.ready @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 79:13]
-    buf.io.in.data <= io.channel.data @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 79:13]
-    buf.io.out <= tx.io.channel @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:17]
-    io.txd <= tx.io.txd @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 81:10]
+    buf.io.in.valid <= io.channel.valid @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:13]
+    io.channel.ready <= buf.io.in.ready @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:13]
+    buf.io.in.data <= io.channel.data @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 80:13]
+    buf.io.out <= tx.io.channel @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 81:17]
+    io.txd <= tx.io.txd @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 82:10]
 
   module Rx :
     input clock : Clock
     input reset : Reset
-    output io : { flip rxd : UInt<1>, flip channel : { flip data : UInt<8>, ready : UInt<1>, flip valid : UInt<1>}} @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 103:14]
+    output io : { flip rxd : UInt<1>, flip channel : { flip data : UInt<8>, ready : UInt<1>, flip valid : UInt<1>}} @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 104:14]
 
     reg rxReg_REG : UInt, clock with :
-      reset => (reset, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 111:30]
-    rxReg_REG <= io.rxd @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 111:30]
+      reset => (reset, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:30]
+    rxReg_REG <= io.rxd @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:30]
     reg rxReg : UInt, clock with :
-      reset => (reset, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 111:22]
-    rxReg <= rxReg_REG @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 111:22]
+      reset => (reset, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:22]
+    rxReg <= rxReg_REG @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:22]
     reg shiftReg : UInt<8>, clock with :
-      reset => (reset, UInt<8>("h41")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 112:25]
+      reset => (reset, UInt<8>("h41")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 114:25]
     reg cntReg : UInt<20>, clock with :
-      reset => (reset, UInt<20>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 113:23]
+      reset => (reset, UInt<20>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 115:23]
     reg bitsReg : UInt<4>, clock with :
-      reset => (reset, UInt<4>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 114:24]
+      reset => (reset, UInt<4>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 116:24]
     reg valReg : UInt<1>, clock with :
-      reset => (reset, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 115:23]
-    node _T = neq(cntReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:16]
-    when _T : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:25]
-      node _cntReg_T = sub(cntReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 118:22]
-      node _cntReg_T_1 = tail(_cntReg_T, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 118:22]
-      cntReg <= _cntReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 118:12]
+      reset => (reset, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 117:23]
+    node _T = neq(cntReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:16]
+    when _T : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:25]
+      node _cntReg_T = sub(cntReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 120:22]
+      node _cntReg_T_1 = tail(_cntReg_T, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 120:22]
+      cntReg <= _cntReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 120:12]
     else :
-      node _T_1 = neq(bitsReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:24]
-      when _T_1 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 119:33]
-        cntReg <= UInt<9>("h1b1") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 120:12]
-        node _shiftReg_T = shr(shiftReg, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:37]
-        node _shiftReg_T_1 = cat(rxReg, _shiftReg_T) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:20]
-        shiftReg <= _shiftReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:14]
-        node _bitsReg_T = sub(bitsReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 122:24]
-        node _bitsReg_T_1 = tail(_bitsReg_T, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 122:24]
-        bitsReg <= _bitsReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 122:13]
-        node _T_2 = eq(bitsReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 123:19]
-        when _T_2 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 123:28]
-          valReg <= UInt<1>("h1") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 124:14]
+      node _T_1 = neq(bitsReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:24]
+      when _T_1 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 121:33]
+        cntReg <= UInt<9>("h1b1") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 122:12]
+        node _shiftReg_T = shr(shiftReg, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 123:37]
+        node _shiftReg_T_1 = cat(rxReg, _shiftReg_T) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 123:20]
+        shiftReg <= _shiftReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 123:14]
+        node _bitsReg_T = sub(bitsReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 124:24]
+        node _bitsReg_T_1 = tail(_bitsReg_T, 1) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 124:24]
+        bitsReg <= _bitsReg_T_1 @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 124:13]
+        node _T_2 = eq(bitsReg, UInt<1>("h1")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 125:19]
+        when _T_2 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 125:28]
+          valReg <= UInt<1>("h1") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 126:14]
       else :
-        node _T_3 = eq(rxReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 127:22]
-        when _T_3 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 127:31]
-          cntReg <= UInt<10>("h28a") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 128:12]
-          bitsReg <= UInt<4>("h8") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 129:13]
-    node _T_4 = and(valReg, io.channel.ready) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 132:16]
-    when _T_4 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 132:37]
-      valReg <= UInt<1>("h0") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 133:12]
-    io.channel.data <= shiftReg @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 136:19]
-    io.channel.valid <= valReg @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 137:20]
+        node _T_3 = eq(rxReg, UInt<1>("h0")) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 129:22]
+        when _T_3 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 129:31]
+          cntReg <= UInt<10>("h28a") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 130:12]
+          bitsReg <= UInt<4>("h8") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 131:13]
+    node _T_4 = and(valReg, io.channel.ready) @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 134:16]
+    when _T_4 : @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 134:37]
+      valReg <= UInt<1>("h0") @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 135:12]
+    io.channel.data <= shiftReg @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 138:19]
+    io.channel.valid <= valReg @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 139:20]
 
   module Echo :
     input clock : Clock
     input reset : UInt<1>
-    output io : { txd : UInt<1>, flip rxd : UInt<1>} @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 141:14]
+    output io : { txd : UInt<1>, flip rxd : UInt<1>} @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 143:14]
 
-    inst tx of BufferTx @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 146:18]
+    inst tx of BufferTx @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:18]
     tx.clock <= clock
     tx.reset <= reset
-    inst rx of Rx @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 147:18]
+    inst rx of Rx @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:18]
     rx.clock <= clock
     rx.reset <= reset
-    io.txd <= tx.io.txd @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 148:10]
-    rx.io.rxd <= io.rxd @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 149:13]
-    rx.io.channel <= tx.io.channel @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 150:17]
+    io.txd <= tx.io.txd @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 150:10]
+    rx.io.rxd <= io.rxd @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 151:13]
+    rx.io.channel <= tx.io.channel @[Users/liuyuxuan/proc/Adagio/src/main/scala/System/UART.scala 152:17]
 
