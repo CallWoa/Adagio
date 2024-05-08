@@ -46,6 +46,16 @@
                     <option name="replacementList" value="$random" />
                     <option name="source" value="Echo.v" />
                   </Body>
+                  <Body>
+                    <option name="offset" value="22903" />
+                    <option name="replacementList" value="$random" />
+                    <option name="source" value="Adagio.v" />
+                  </Body>
+                  <Body>
+                    <option name="offset" value="4318" />
+                    <option name="replacementList" value="$random" />
+                    <option name="source" value="UART.v" />
+                  </Body>
                 </list>
               </option>
               <option name="dependencies">
@@ -56,6 +66,8 @@
                   <option value="Top.v" />
                   <option value="System.v" />
                   <option value="Echo.v" />
+                  <option value="Adagio.v" />
+                  <option value="UART.v" />
                 </set>
               </option>
             </Define>
@@ -401,6 +413,102 @@
                     </option>
                     <option name="offset" value="4278" />
                     <option name="source" value="Echo.v" />
+                  </Body>
+                  <Body>
+                    <option name="inclusionDependencies">
+                      <list>
+                        <InclusionDependency>
+                          <option name="name" value="RANDOMIZE_GARBAGE_ASSIGN" />
+                          <option name="rule" value="DEFINED" />
+                        </InclusionDependency>
+                      </list>
+                    </option>
+                    <option name="offset" value="22704" />
+                    <option name="source" value="Adagio.v" />
+                  </Body>
+                  <Body>
+                    <option name="inclusionDependencies">
+                      <list>
+                        <InclusionDependency>
+                          <option name="name" value="RANDOMIZE_INVALID_ASSIGN" />
+                          <option name="rule" value="DEFINED" />
+                        </InclusionDependency>
+                      </list>
+                    </option>
+                    <option name="offset" value="22761" />
+                    <option name="source" value="Adagio.v" />
+                  </Body>
+                  <Body>
+                    <option name="inclusionDependencies">
+                      <list>
+                        <InclusionDependency>
+                          <option name="name" value="RANDOMIZE_REG_INIT" />
+                          <option name="rule" value="DEFINED" />
+                        </InclusionDependency>
+                      </list>
+                    </option>
+                    <option name="offset" value="22812" />
+                    <option name="source" value="Adagio.v" />
+                  </Body>
+                  <Body>
+                    <option name="inclusionDependencies">
+                      <list>
+                        <InclusionDependency>
+                          <option name="name" value="RANDOMIZE_MEM_INIT" />
+                          <option name="rule" value="DEFINED" />
+                        </InclusionDependency>
+                      </list>
+                    </option>
+                    <option name="offset" value="22863" />
+                    <option name="source" value="Adagio.v" />
+                  </Body>
+                  <Body>
+                    <option name="inclusionDependencies">
+                      <list>
+                        <InclusionDependency>
+                          <option name="name" value="RANDOMIZE_GARBAGE_ASSIGN" />
+                          <option name="rule" value="DEFINED" />
+                        </InclusionDependency>
+                      </list>
+                    </option>
+                    <option name="offset" value="4119" />
+                    <option name="source" value="UART.v" />
+                  </Body>
+                  <Body>
+                    <option name="inclusionDependencies">
+                      <list>
+                        <InclusionDependency>
+                          <option name="name" value="RANDOMIZE_INVALID_ASSIGN" />
+                          <option name="rule" value="DEFINED" />
+                        </InclusionDependency>
+                      </list>
+                    </option>
+                    <option name="offset" value="4176" />
+                    <option name="source" value="UART.v" />
+                  </Body>
+                  <Body>
+                    <option name="inclusionDependencies">
+                      <list>
+                        <InclusionDependency>
+                          <option name="name" value="RANDOMIZE_REG_INIT" />
+                          <option name="rule" value="DEFINED" />
+                        </InclusionDependency>
+                      </list>
+                    </option>
+                    <option name="offset" value="4227" />
+                    <option name="source" value="UART.v" />
+                  </Body>
+                  <Body>
+                    <option name="inclusionDependencies">
+                      <list>
+                        <InclusionDependency>
+                          <option name="name" value="RANDOMIZE_MEM_INIT" />
+                          <option name="rule" value="DEFINED" />
+                        </InclusionDependency>
+                      </list>
+                    </option>
+                    <option name="offset" value="4278" />
+                    <option name="source" value="UART.v" />
                   </Body>
                 </list>
               </option>

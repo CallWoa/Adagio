@@ -93,7 +93,7 @@ class Threadgroup(bit: Int) extends Module {
         (state === s2) -> matrix_a.readvec(1),
         (state === s3) -> matrix_a.readvec(2),
         (state === s4) -> matrix_a.readvec(3),
-        (state === s1) -> matrix_a.readvec(0),
+        (state === s1) -> matrix_a.readvec(0)
       )
     )
     val dpIn_vb = matrix_b.readvec(y)
@@ -102,7 +102,7 @@ class Threadgroup(bit: Int) extends Module {
         (state === s2) -> Mux(mixPc, matrix_c.readvec(1, Some(fp32), Some(2)), box(matrix_c.readvec(1), k_conf)),
         (state === s3) -> box(matrix_c.readvec(2), k_conf),
         (state === s4) -> box(matrix_c.readvec(3), k_conf),
-        (state === s1) -> Mux(mixPc, matrix_c.readvec(0, Some(fp32), Some(2)), box(matrix_c.readvec(0), k_conf)),
+        (state === s1) -> Mux(mixPc, matrix_c.readvec(0, Some(fp32), Some(2)), box(matrix_c.readvec(0), k_conf))
       )
     )
     val rowtag_in = Mux1H(
@@ -172,11 +172,11 @@ object Threadgroup{
     val prehandshaked = pre_valid && tg.io.in.ready
 
     tg.io.in.valid := pre_valid
-    tg.io.in.bits.matrix_a := RegEnable(a, prehandshaked)
-    tg.io.in.bits.matrix_b := RegEnable(b, prehandshaked)
-    tg.io.in.bits.matrix_c := RegEnable(c, prehandshaked)
-    tg.io.in.bits.mixPcMode := RegEnable(mixPc, prehandshaked)
-    tg.io.in.bits.roundingMode := RegEnable(rm, prehandshaked)
+    tg.io.in.bits.matrix_a := a
+    tg.io.in.bits.matrix_b := b
+    tg.io.in.bits.matrix_c := c
+    tg.io.in.bits.mixPcMode := mixPc
+    tg.io.in.bits.roundingMode := rm
     tg.io.out.ready := post_ready
 
     (tg.io.out.bits.matrix_d, tg.io.out.valid, tg.io.in.ready)

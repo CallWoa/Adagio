@@ -2,6 +2,7 @@ package System
 
 import chisel3._
 import chisel3.util._
+import TensorCore._
 
 class Channel extends Bundle {
   val data = Input(Bits(8.W))
@@ -152,7 +153,106 @@ class Echo(sysclk: Int, baudRate: Int) extends Module {
   tx.io.channel <> rx.io.channel
 }
 
+class uartio extends Bundle{
+  val txd = Output(Bits(1.W))
+  val rxd = Input(Bits(1.W))
+}
+
+class uartCtrl extends Bundle{
+  val tx_done = Input(Bool())
+  val rx_valid = Input(Bool())
+  val tx_en = Output(Bool())
+}
+class UART(sysclk: Int, baudRate: Int) extends Module{
+  val io = IO(new Bundle() {
+    val ctrl = Flipped(new uartCtrl)
+    val mixPc = Input(Bool())
+    val lane = new uartio
+    val rf = Flipped(new rf_io)
+  })
+  /*------------------------------------------------------------------------
+  reg define
+  *------------------------------------------------------------------------*/
+  val MAX_ADDR = Mux(io.mixPc, 255.U, 191.U)
+
+  val rx_byteCnt = RegInit(0.U(3.W))
+  val rx_regCnt = RegInit(0.U(8.W))
+  val rx_byteReg = RegInit(0.U(XLEN.W))
+  val rx_done = RegInit(false.B)
+
+  val tx_byteCnt = RegInit(0.U(3.W))
+  val tx_regCnt = RegInit(0.U(8.W))
+  val tx_byteReg = RegInit(0.U(8.W))
+  val tx_done = RegInit(false.B)
+  /*------------------------------------------------------------------------
+  tx/rx Module
+  *------------------------------------------------------------------------*/
+  val tx = Module(new BufferTx(sysclk, baudRate))
+  io.lane.txd := tx.io.txd
+  tx.io.channel.valid := io.ctrl.tx_en
+  tx.io.channel.data := tx_byteReg
+  val tx_ready = tx.io.channel.ready
+
+  val rx = Module(new Rx(sysclk, baudRate))
+  rx.io.rxd := io.lane.rxd
+  rx.io.channel.ready := !io.ctrl.tx_en
+  val rx_data_byte = rx.io.channel.data
+  val rxd_valid = rx.io.channel.valid
+  /*------------------------------------------------------------------------
+  rx logic
+  *------------------------------------------------------------------------*/
+  when(rxd_valid && rx.io.channel.ready) {
+    rx_byteReg := (rx_byteReg << 8).asUInt | rx_data_byte
+    rx_byteCnt := rx_byteReg + 1.U
+  }
+
+  when(rx_byteCnt === 7.U) {
+    io.rf.w_en := true.B
+    when(rx_regCnt === MAX_ADDR) {
+      rx_regCnt := 0.U
+      rx_done := true.B
+    }.otherwise {
+      rx_regCnt := rx_regCnt + 1.U
+    }
+  }.otherwise {
+    io.rf.w_en := false.B
+  }
+  /*------------------------------------------------------------------------
+  tx logic
+  *------------------------------------------------------------------------*/
+  val shift_reg = RegInit(0.U(XLEN.W))
+  when(io.ctrl.tx_en && tx_ready) {
+    when(tx_byteCnt === 0.U) {
+      shift_reg := io.rf.r_data
+    }
+    tx_byteReg := shift_reg(63, 56)
+    tx_byteCnt := tx_byteCnt + 1.U
+    shift_reg := shift_reg << 8
+  }
+  when(tx_byteCnt === 7.U) {
+    when(tx_regCnt === MAX_ADDR) {
+      tx_regCnt := 0.U
+      tx_done := true.B
+    }.otherwise {
+      tx_regCnt := rx_regCnt + 1.U
+    }
+  }
+  /*------------------------------------------------------------------------
+  IO
+  *------------------------------------------------------------------------*/
+  io.ctrl.rx_valid := rx_done
+  io.ctrl.tx_done := tx_done
+
+  io.rf.r_addr := tx_regCnt + 128.U
+  io.rf.w_addr := rx_regCnt
+  io.rf.w_data := rx_byteReg
+}
+
 object Echo_t extends App {
   emitVerilog(new Echo(50000000, 115200), Array("--target-dir", "generated"))
+}
+
+object UART_v extends App {
+  emitVerilog(new UART(50000000, 115200), Array("--target-dir", "generated"))
 }
 
