@@ -26,14 +26,14 @@ VM_CLASSES_FAST += \
 	VTop \
 	VTop___024root__DepSet_h2cbf8d5f__0 \
 	VTop___024root__DepSet_h3858ed78__0 \
-	VTop_Octet__DepSet_h21bfa56a__0 \
-	VTop_Octet__DepSet_h0f605449__0 \
-	VTop_DotProdUnit__DepSet_h6a12b1c4__0 \
-	VTop_DotProdUnit__DepSet_h6a12b1c4__1 \
-	VTop_DotProdUnit__DepSet_h6a12b1c4__2 \
-	VTop_DotProdUnit__DepSet_h6a12b1c4__3 \
-	VTop_DotProdUnit__DepSet_h6a12b1c4__4 \
-	VTop_DotProdUnit__DepSet_ha4d9dcd4__0 \
+	VTop_Threadgroup__DepSet_h99f6e3a7__0 \
+	VTop_Threadgroup__DepSet_h7c3a099d__0 \
+	VTop_Threadgroup__DepSet_hf97edb5a__0 \
+	VTop_DotProdUnit_1__DepSet_h6aa02c68__0 \
+	VTop_DotProdUnit_1__DepSet_h6aa02c68__1 \
+	VTop_DotProdUnit_1__DepSet_h99c7d233__0 \
+	VTop_DotProdUnit_1__DepSet_h99c7d233__1 \
+	VTop_DotProdUnit_1__DepSet_h99c7d233__2 \
 	VTop_FADD__DepSet_he569ea9f__0 \
 	VTop_FADD__DepSet_he569ea9f__1 \
 	VTop_FADD__DepSet_he569ea9f__2 \
@@ -72,16 +72,15 @@ VM_CLASSES_SLOW += \
 	VTop___024root__Slow \
 	VTop___024root__DepSet_h2cbf8d5f__0__Slow \
 	VTop___024root__DepSet_h3858ed78__0__Slow \
-	VTop_Octet__Slow \
-	VTop_Octet__DepSet_h3c838f07__0__Slow \
-	VTop_Octet__DepSet_h6591549b__0__Slow \
-	VTop_Octet__DepSet_h0f605449__0__Slow \
-	VTop_DotProdUnit__Slow \
-	VTop_DotProdUnit__DepSet_h16fcbaca__0__Slow \
-	VTop_DotProdUnit__DepSet_ha4d9dcd4__0__Slow \
-	VTop_DotProdUnit__DepSet_ha4d9dcd4__1__Slow \
-	VTop_DotProdUnit__DepSet_ha4d9dcd4__2__Slow \
-	VTop_DotProdUnit__DepSet_ha4d9dcd4__3__Slow \
+	VTop_Threadgroup__Slow \
+	VTop_Threadgroup__DepSet_hd878e116__0__Slow \
+	VTop_Threadgroup__DepSet_hacf457c7__0__Slow \
+	VTop_Threadgroup__DepSet_hf97edb5a__0__Slow \
+	VTop_DotProdUnit_1__Slow \
+	VTop_DotProdUnit_1__DepSet_hc8c6624c__0__Slow \
+	VTop_DotProdUnit_1__DepSet_h99c7d233__0__Slow \
+	VTop_DotProdUnit_1__DepSet_h99c7d233__1__Slow \
+	VTop_DotProdUnit_1__DepSet_h99c7d233__2__Slow \
 	VTop_FADD__Slow \
 	VTop_FADD__DepSet_h95762ac3__0__Slow \
 	VTop_FADD__DepSet_he569ea9f__0__Slow \
@@ -143,7 +142,6 @@ VM_SUPPORT_FAST += \
 	VTop__Trace__21 \
 	VTop__Trace__22 \
 	VTop__Trace__23 \
-	VTop__Trace__24 \
 
 # Generated support classes, non-fast-path, compile with low/medium optimization
 VM_SUPPORT_SLOW += \
@@ -179,8 +177,6 @@ VM_SUPPORT_SLOW += \
 	VTop__Trace__28__Slow \
 	VTop__Trace__29__Slow \
 	VTop__Trace__30__Slow \
-	VTop__Trace__31__Slow \
-	VTop__Trace__32__Slow \
 
 # Global classes, need linked once per executable, fast-path, compile with highest optimization
 VM_GLOBAL_FAST += \

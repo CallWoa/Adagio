@@ -12,20 +12,10 @@ VL_ATTR_COLD void VTop_FADD___ctor_var_reset(VTop_FADD* vlSelf) {
     VTop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+                VTop_FADD___ctor_var_reset\n"); );
     // Body
-    vlSelf->__PVT__io_in_ready = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__io_in_valid = VL_RAND_RESET_I(1);
     vlSelf->__PVT__io_in_bits_a = VL_RAND_RESET_I(32);
     vlSelf->__PVT__io_in_bits_b = VL_RAND_RESET_I(32);
-    vlSelf->__PVT__io_in_bits_roundingMode = VL_RAND_RESET_I(3);
-    vlSelf->__PVT__io_in_bits_a_inter_valid = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__io_in_bits_b_inter_valid = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__io_in_bits_a_inter_flags_isNaN = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__io_in_bits_a_inter_flags_isInf = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__io_in_bits_b_inter_flags_isNaN = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__io_in_bits_b_inter_flags_isInf = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__io_out_ready = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__io_out_valid = VL_RAND_RESET_I(1);
     vlSelf->__PVT__io_out_bits_result = VL_RAND_RESET_I(32);
+    vlSelf->__PVT__farPath_io_in_a_sign = VL_RAND_RESET_I(1);
     vlSelf->__PVT__farPath_io_in_a_exp = VL_RAND_RESET_I(8);
     vlSelf->__PVT__farPath_io_in_a_sig = VL_RAND_RESET_I(24);
     vlSelf->__PVT__farPath_io_in_b_exp = VL_RAND_RESET_I(8);
@@ -41,16 +31,12 @@ VL_ATTR_COLD void VTop_FADD___ctor_var_reset(VTop_FADD* vlSelf) {
     vlSelf->__PVT__diffExp = VL_RAND_RESET_I(8);
     vlSelf->__PVT__closePathSel = VL_RAND_RESET_I(1);
     vlSelf->__PVT__special_path_hasNaN = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__rmin = VL_RAND_RESET_I(1);
     vlSelf->__PVT__farPath__DOT__shiftRightJam_io_shamt = VL_RAND_RESET_I(5);
-    vlSelf->__PVT__farPath__DOT__far_path_tininess_rounder_io_in_sig = VL_RAND_RESET_I(27);
     vlSelf->__PVT__farPath__DOT__far_path_rounder_io_cout = VL_RAND_RESET_I(1);
     vlSelf->__PVT__farPath__DOT___neg_sigB_T = VL_RAND_RESET_I(27);
     vlSelf->__PVT__farPath__DOT__result_sig_raw = VL_RAND_RESET_I(28);
+    vlSelf->__PVT__farPath__DOT__resultSigNoRound = VL_RAND_RESET_I(27);
     vlSelf->__PVT__farPath__DOT__resultExpNoRound = VL_RAND_RESET_I(8);
-    vlSelf->__PVT__farPath__DOT__far_path_tininess_rounder__DOT__rounder_io_signIn = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__farPath__DOT__far_path_tininess_rounder__DOT__rounder__DOT__inexact = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__farPath__DOT__far_path_rounder__DOT__inexact = VL_RAND_RESET_I(1);
     vlSelf->__PVT__farPath__DOT__far_path_rounder__DOT__r_up = VL_RAND_RESET_I(1);
     vlSelf->__PVT__closePath__DOT__lza_io_b = VL_RAND_RESET_I(25);
     vlSelf->__PVT__closePath__DOT__resultSigComplementForm = VL_RAND_RESET_I(26);
@@ -61,7 +47,7 @@ VL_ATTR_COLD void VTop_FADD___ctor_var_reset(VTop_FADD* vlSelf) {
     vlSelf->__PVT__closePath__DOT__sig_s1 = VL_RAND_RESET_I(25);
     vlSelf->__PVT__closePath__DOT___sig_s3_T = VL_RAND_RESET_I(25);
     vlSelf->__PVT__closePath__DOT__near_path_exp_rounded = VL_RAND_RESET_I(8);
-    vlSelf->__PVT__closePath__DOT___io_out_result_T_3 = VL_RAND_RESET_I(1);
+    vlSelf->__PVT__closePath__DOT___io_out_result_T_1 = VL_RAND_RESET_I(1);
     vlSelf->__PVT__closePath__DOT__lza__DOT__preEncoder_io_f = VL_RAND_RESET_I(25);
     vlSelf->__PVT__closePath__DOT__lza__DOT__errorDetector_io_y = VL_RAND_RESET_I(1);
     vlSelf->__PVT__closePath__DOT__lza__DOT__io_lzc_lzc_io_out = VL_RAND_RESET_I(5);
@@ -315,7 +301,6 @@ VL_ATTR_COLD void VTop_FADD___ctor_var_reset(VTop_FADD* vlSelf) {
     vlSelf->__PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_5__DOT__zout_0 = VL_RAND_RESET_I(1);
     vlSelf->__PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_5__DOT__zout_1 = VL_RAND_RESET_I(1);
     vlSelf->__PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_6__DOT___pout_1_T_7 = VL_RAND_RESET_I(1);
-    vlSelf->__PVT__closePath__DOT__near_path_tininess_rounder__DOT__rounder_io_signIn = VL_RAND_RESET_I(1);
     vlSelf->__PVT__closePath__DOT__near_path_rounder__DOT__r_up = VL_RAND_RESET_I(1);
     vlSelf->__VdfgTmp_h8093e782__0 = 0;
     vlSelf->__VdfgTmp_h4411a1c1__0 = 0;

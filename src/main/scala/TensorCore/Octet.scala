@@ -9,28 +9,22 @@ class tgSrc (bit: Int) extends Bundle{
   val matrix_c = Output(new Matrix(bit))
 }
 
-class octetIn (bit: Int) extends Bundle {
-  val threadgroup0 = new tgSrc(bit)
-  val threadgroup4 = new tgSrc(bit)
-  val matBSel = Output(Bool()) //false: choose tg0; true: choose tg4
-  val mixPcMode = Output(Bool())
-  val roundingMode = Output(UInt(3.W))
-}
-
-class octetOut (bit: Int) extends Bundle {
-  val threadgroup0 = new threadgroupOut(bit)
-  val threadgroup4 = new threadgroupOut(bit)
-}
-
 class Octet (bit: Int) extends Module {
   val io = IO(new Bundle {
-    val in = Flipped(Decoupled(new octetIn(bit)))
-    val out = Decoupled(new octetOut(bit))
+    val in = Flipped(Decoupled(new Bundle() {
+      val threadgroup0 = new tgSrc(bit)
+      val threadgroup4 = new tgSrc(bit)
+      val ctrl = new tcCtrl()
+      val decode = new Decode()
+    }))
+    val out = Decoupled(new Bundle() {
+      val threadgroup0_matrix_d = Output(new Matrix(bit))
+      val threadgroup4_matrix_d = Output(new Matrix(bit))
+      val decode = new Decode()
+    })
   })
 
-  val rm = io.in.bits.roundingMode
-  val mixPc = io.in.bits.mixPcMode
-  val matBSel = io.in.bits.matBSel
+  val matBSel = io.in.bits.ctrl.matBSel
 
   val tg0_matrix_a = io.in.bits.threadgroup0.matrix_a
   val tg0_matrix_b = io.in.bits.threadgroup0.matrix_b
@@ -38,41 +32,28 @@ class Octet (bit: Int) extends Module {
   val tg4_matrix_a = io.in.bits.threadgroup4.matrix_a
   val tg4_matrix_b = io.in.bits.threadgroup4.matrix_b
   val tg4_matrix_c = io.in.bits.threadgroup4.matrix_c
-  val (tg0_matrix_d, tg0_valid, tg0_ready) = Threadgroup(bit,
+  val (tg0_matrix_d, tg0_valid, tg0_ready, tg0_decode) = Threadgroup(bit,
     tg0_matrix_a, Mux(matBSel, tg4_matrix_b, tg0_matrix_b), tg0_matrix_c,
-    rm, mixPc, io.in.valid, io.out.ready)
-  val (tg4_matrix_d, tg4_valid, tg4_ready) = Threadgroup(bit,
+    io.in.bits.ctrl, io.in.valid, io.out.ready, Some(io.in.bits.decode))
+  val (tg4_matrix_d, tg4_valid, tg4_ready, tg4_decode) = Threadgroup(bit,
     tg4_matrix_a, Mux(matBSel, tg4_matrix_b, tg0_matrix_b), tg4_matrix_c,
-    rm, mixPc, io.in.valid, io.out.ready)
-//  val (tg0_matrix_d, tg0_valid, tg0_ready) = Threadgroup(bit,
-//    tg0_matrix_a, tg0_matrix_b, tg0_matrix_c,
-//    rm, mixPc, io.in.valid, io.out.ready)
-//  val (tg4_matrix_d, tg4_valid, tg4_ready) = Threadgroup(bit,
-//    tg4_matrix_a, tg4_matrix_b, tg4_matrix_c,
-//    rm, mixPc, io.in.valid, io.out.ready)
+    io.in.bits.ctrl, io.in.valid, io.out.ready)
 
-  io.in.ready := tg0_ready && tg4_ready
-  io.out.valid := tg0_valid && tg4_valid
-  io.out.bits.threadgroup0.matrix_d := tg0_matrix_d
-  io.out.bits.threadgroup4.matrix_d := tg4_matrix_d
+  io.in.ready := tg0_ready
+  io.out.valid := tg0_valid
+  io.out.bits.threadgroup0_matrix_d := tg0_matrix_d
+  io.out.bits.threadgroup4_matrix_d := tg4_matrix_d
+  io.out.bits.decode := tg0_decode
 }
 
 object Octet{
   def apply(bit: Int,
             tg0a: Matrix, tg0b: Matrix, tg0c: Matrix,
             tg4a: Matrix, tg4b: Matrix, tg4c: Matrix,
-            rm: UInt, mixPc: Bool, matBSel: Bool,
-            pre_valid: Bool, post_ready: Bool) = {
+            ctrl: tcCtrl, pre_valid: Bool, post_ready: Bool,
+            decode: Option[Decode] = None) = {
     val ot = Module(new Octet(bit))
-
-//    val prehandshaked = pre_valid && ot.io.in.ready
-//    val valid = RegInit(false.B)
-//    when(ot.io.out.valid && post_ready) {
-//      valid := false.B
-//    }
-//    when(prehandshaked) {
-//      valid := true.B
-//    }
+    val decode_in = if(decode.isDefined) decode.get else DontCare
 
     ot.io.in.valid := pre_valid
     ot.io.in.bits.threadgroup0.matrix_a := tg0a
@@ -81,12 +62,11 @@ object Octet{
     ot.io.in.bits.threadgroup4.matrix_a := tg4a
     ot.io.in.bits.threadgroup4.matrix_b := tg4b
     ot.io.in.bits.threadgroup4.matrix_c := tg4c
-    ot.io.in.bits.matBSel := matBSel
-    ot.io.in.bits.mixPcMode := mixPc
-    ot.io.in.bits.roundingMode := rm
+    ot.io.in.bits.ctrl := ctrl
+    ot.io.in.bits.decode := decode_in
     ot.io.out.ready := post_ready
 
-    (ot.io.out.bits.threadgroup0.matrix_d, ot.io.out.bits.threadgroup4.matrix_d, ot.io.out.valid, ot.io.in.ready)
+    (ot.io.out.bits.threadgroup0_matrix_d, ot.io.out.bits.threadgroup4_matrix_d, ot.io.out.valid, ot.io.in.ready, ot.io.out.bits.decode)
   }
 }
 

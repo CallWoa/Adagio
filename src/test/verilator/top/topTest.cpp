@@ -11,7 +11,7 @@
 #include <verilated_vcd_c.h> 
 using namespace std;
 
-#define MIXPC false
+#define MIXPC true
 #define MAX_SET 4
 #define MAX_STEP (MIXPC? 4 : 2)
 
@@ -130,11 +130,12 @@ int main(int argc, char** argv, char** env) {
     dut.io_out_ready = 1;
     dut.clock = 0;
     dut.eval();
-    dut.clock = 1;
-    dut.eval();
+    // m_trace->dump(sim_time);
+    // sim_time++;
+    // dut.clock = 1;
+    // dut.eval();
 
     dut.io_in_bits_ctrl_mixPcMode = MIXPC? 1 : 0;
-    dut.io_in_bits_ctrl_roundingMode = 0;
 
     uint64_t cycle = 0;
     uint64_t cnt = 0;
@@ -157,15 +158,13 @@ int main(int argc, char** argv, char** env) {
     int set = 1;
     int out_set = 1;
     bool exec = true; 
-    while (exec){ 
+    while (exec){
         bool in_valid = (out_set == set) || ((out_set == set - 1) && (out_step > step));
         dut.io_in_valid = in_valid? 1 : 0;
         if((dut.io_in_ready == 1) && (dut.io_in_valid == 1)){
-            if(step > (MAX_STEP / 2 - 1)){
-                dut.io_in_bits_ctrl_matBSel = 1;
-            }else{
-                dut.io_in_bits_ctrl_matBSel = 0;
-            }
+            dut.io_in_bits_decode_src = step + 1;
+            dut.io_in_bits_ctrl_matBSel = (step > (MAX_STEP / 2 - 1))? 1 : 0;
+            dut.io_in_bits_ctrl_matASel = (MIXPC & ((step == 1) | (step == 3)))? 1 : 0;
             for(int i = 0; i < 8; ++i){
                 switch (i){
                     case 0:{ 
@@ -341,15 +340,17 @@ int main(int argc, char** argv, char** env) {
                 }   
             }
         }
+
         for(int i = 0; i < 2; ++i){
             dut.clock ^= 1;
-	        dut.eval(); 
-	        m_trace->dump(sim_time);
-	        sim_time++;
+            dut.eval(); 
+            m_trace->dump(sim_time);
+            sim_time++;
         }
         cycle ++;
 
-        if(dut.io_out_valid == 1) {         
+        dut.io_out_ready = (cycle > 8 && cycle < 20)? 0 : 1;
+        if(dut.io_out_valid == 1 && dut.io_out_ready == 1) {         
             for(int i = 0; i < 8; ++i){
                 dut_matrix_d_ulong[0][out_step][i] = dut.io_out_bits_tc0_octet0_threadgroup0_matrix_d_data[i];
                 dut_matrix_d_ulong[4][out_step][i] = dut.io_out_bits_tc0_octet0_threadgroup4_matrix_d_data[i];
@@ -371,6 +372,9 @@ int main(int argc, char** argv, char** env) {
             }
         }
         cout << "set: " << set << " cycle: " << cycle <<" step: "<< step << " out_step: " << out_step << " out_set: "<< out_set << endl;  
+        if(cycle > 200){
+            exit(EXIT_FAILURE);
+        }
     }     
 
     unsigned long ref_matrix_d_ulong[8][MAX_STEP][8];
@@ -471,7 +475,7 @@ unsigned long floatToFP16(float value) {
 *------------------------------------------------------------------------*/
 fp16 :: fp16(){
     int s = randint(0, 1);
-    int exp = randint(0, 30); //0-30
+    int exp = randint(0, 15); //0-30
     int sig = randint(0, 1023);
     bitset<1> sign (s);
     bitset<5> exponent (exp);
@@ -718,8 +722,8 @@ void tensor :: mma(unsigned long ref_matrix_d_ulong[8][MAX_STEP][8]){
                     ref_matrix_d_ulong[tg][step][i] = matrix_d_bit[tg][step][x][y].to_ulong();
                 }else{
                     bitset<32> fp16comb;
-                    bitset<32> hi = matrix_d_bit[tg][step][x][y];
-                    bitset<32> lo = matrix_d_bit[tg][step][x][y + 1];
+                    bitset<32> hi = matrix_d_bit[tg][step][x][y + 1];
+                    bitset<32> lo = matrix_d_bit[tg][step][x][y];
                     for(int j = 0; j < 32; ++j){
                         if(j < 16){
                             if(lo[j]){
@@ -989,31 +993,21 @@ float tensor :: addTree(float* pre_result, int len){
 }
  
 void tensor :: coordTrans(const char tag, int index, int coord[2]){
-    int rows = 0;
-    int cols = 0;
+    int cols = 4;
     switch (tag)
     {
     case 'a':
-        rows = __mixPc? 2 : 4;
-        cols = 4;
-        coord[0] = rows - 1 - index / (cols / 2);
-        coord[1] = cols - 2 - (index % (cols / 2)) * 2;
-        break;
     case 'b':
-        rows = 4;
-        cols = 4;
-        coord[0] = rows - 1 - index / (cols / 2);
-        coord[1] = cols - 2 - (index % (cols / 2)) * 2;
+        coord[0] = index / (cols / 2);
+        coord[1] = (index % (cols / 2)) * 2;
         break;
     case 'c':
-        rows = __mixPc? 2 : 4;
-        cols = 4;
         if(__mixPc){
-            coord[0] = rows - 1 - index / cols;
-            coord[1] = cols - 1 - index % cols;
+            coord[0] = index / cols;
+            coord[1] = index % cols;
         }else{
-            coord[0] = rows - 1 - index / (cols / 2);
-            coord[1] = cols - 2 - (index % (cols / 2)) * 2;
+            coord[0] = index / (cols / 2);
+            coord[1] = (index % (cols / 2)) * 2;
         }
         break;
     default:
@@ -1034,15 +1028,16 @@ void tensor :: getTile(int tcNo, int otNo, int tgNo,
             matrix_a_getTile_bit(tgTag, set, step, matrix_a_bit);
             for(int i = 0; i < 8; ++i){
                 if((i > 3) && __mixPc){
-                    mat_ulong[i - 4] = 0;
+                    int index = (MIXPC & ((step == 1) | (step == 3)))? i - 4 : i;
+                    mat_ulong[index] = 0;
                 }else{
                     bitset<32> fp16comb;
                     int coord[2] = {0, 0};
                     coordTrans('a', i, coord);
                     int x = coord[0];
                     int y = coord[1];
-                    bitset<16> hi = matrix_a_bit[x][y];
-                    bitset<16> lo = matrix_a_bit[x][y + 1];
+                    bitset<16> hi = matrix_a_bit[x][y + 1];
+                    bitset<16> lo = matrix_a_bit[x][y];
                     for(int j = 0; j < 32; ++j){
                         if(j < 16){
                             if(lo[j]){
@@ -1054,11 +1049,8 @@ void tensor :: getTile(int tcNo, int otNo, int tgNo,
                             }
                         }
                     }
-                    if(__mixPc){
-                        mat_ulong[i + 4] = fp16comb.to_ulong();
-                    }else{
-                        mat_ulong[i] = fp16comb.to_ulong();
-                    }
+                    int index = (MIXPC & ((step == 1) | (step == 3)))? i + 4 : i;
+                    mat_ulong[index] = fp16comb.to_ulong();
                 }
             }
         }  
@@ -1072,8 +1064,8 @@ void tensor :: getTile(int tcNo, int otNo, int tgNo,
                 coordTrans('b', i, coord);
                 int x = coord[0];
                 int y = coord[1];
-                bitset<16> hi = matrix_b_bit[x][y];
-                bitset<16> lo = matrix_b_bit[x][y + 1];
+                bitset<16> hi = matrix_b_bit[x][y + 1];
+                bitset<16> lo = matrix_b_bit[x][y];
                 for(int j = 0; j < 32; ++j){
                     if(j < 16){
                         if(lo[j]){
@@ -1107,8 +1099,8 @@ void tensor :: getTile(int tcNo, int otNo, int tgNo,
                     coordTrans('c', i, coord);
                     int x = coord[0];
                     int y = coord[1];
-                    bitset<32> hi = matrix_c_bit[x][y];
-                    bitset<32> lo = matrix_c_bit[x][y + 1];
+                    bitset<32> hi = matrix_c_bit[x][y + 1];
+                    bitset<32> lo = matrix_c_bit[x][y];
                     for(int j = 0; j < 32; ++j){
                         if(j < 16){
                             if(lo[j]){

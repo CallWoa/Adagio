@@ -31,10 +31,15 @@ class alignas(VL_CACHE_LINE_BYTES) VDotProdUnit VL_NOT_FINAL : public VerilatedM
     VL_IN8(&reset,0,0);
     VL_OUT8(&io_in_ready,0,0);
     VL_IN8(&io_in_valid,0,0);
-    VL_IN8(&io_in_bits_roundingMode,2,0);
+    VL_IN8(&io_in_bits_flush,0,0);
+    VL_IN8(&io_in_bits_ctrl_mixPc,0,0);
+    VL_IN8(&io_in_bits_ctrl_rowtag,1,0);
+    VL_IN8(&io_in_bits_ctrl_decode_src,4,0);
     VL_IN8(&io_out_ready,0,0);
     VL_OUT8(&io_out_valid,0,0);
-    VL_OUT8(&io_out_bits_fflags,4,0);
+    VL_OUT8(&io_out_bits_ctrl_mixPc,0,0);
+    VL_OUT8(&io_out_bits_ctrl_rowtag,1,0);
+    VL_OUT8(&io_out_bits_ctrl_decode_src,4,0);
     VL_IN16(&io_in_bits_vec_a_0,15,0);
     VL_IN16(&io_in_bits_vec_a_1,15,0);
     VL_IN16(&io_in_bits_vec_a_2,15,0);
@@ -43,14 +48,16 @@ class alignas(VL_CACHE_LINE_BYTES) VDotProdUnit VL_NOT_FINAL : public VerilatedM
     VL_IN16(&io_in_bits_vec_b_1,15,0);
     VL_IN16(&io_in_bits_vec_b_2,15,0);
     VL_IN16(&io_in_bits_vec_b_3,15,0);
+    VL_IN(&io_in_bits_c,31,0);
     VL_OUT(&io_out_bits_result,31,0);
 
     // CELLS
     // Public to allow access to /* verilator public */ items.
     // Otherwise the application code can consider these internals.
-    VDotProdUnit_FADD* const __PVT__DotProdUnit__DOT__faddModule;
-    VDotProdUnit_FADD* const __PVT__DotProdUnit__DOT__faddModule_1;
-    VDotProdUnit_FADD* const __PVT__DotProdUnit__DOT__faddModule_2;
+    VDotProdUnit_FADD* const __PVT__DotProdUnit__DOT__addResult_0_faddModule;
+    VDotProdUnit_FADD* const __PVT__DotProdUnit__DOT__addResult_1_faddModule;
+    VDotProdUnit_FADD* const __PVT__DotProdUnit__DOT__addResult_0_faddModule_1;
+    VDotProdUnit_FADD* const __PVT__DotProdUnit__DOT__fadd_final_res_faddModule;
 
     // Root instance pointer to allow access to model internals,
     // including inlined /* verilator public_flat_* */ items.

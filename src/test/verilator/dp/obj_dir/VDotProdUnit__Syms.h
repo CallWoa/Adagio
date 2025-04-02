@@ -29,9 +29,10 @@ class alignas(VL_CACHE_LINE_BYTES)VDotProdUnit__Syms final : public VerilatedSym
 
     // MODULE INSTANCE STATE
     VDotProdUnit___024root         TOP;
-    VDotProdUnit_FADD              TOP__DotProdUnit__DOT__faddModule;
-    VDotProdUnit_FADD              TOP__DotProdUnit__DOT__faddModule_1;
-    VDotProdUnit_FADD              TOP__DotProdUnit__DOT__faddModule_2;
+    VDotProdUnit_FADD              TOP__DotProdUnit__DOT__addResult_0_faddModule;
+    VDotProdUnit_FADD              TOP__DotProdUnit__DOT__addResult_0_faddModule_1;
+    VDotProdUnit_FADD              TOP__DotProdUnit__DOT__addResult_1_faddModule;
+    VDotProdUnit_FADD              TOP__DotProdUnit__DOT__fadd_final_res_faddModule;
 
     // CONSTRUCTORS
     VDotProdUnit__Syms(VerilatedContext* contextp, const char* namep, VDotProdUnit* modelp);

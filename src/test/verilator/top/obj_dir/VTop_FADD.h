@@ -16,17 +16,7 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
     // DESIGN SPECIFIC STATE
     // Anonymous structures to workaround compiler member-count bugs
     struct {
-        VL_OUT8(__PVT__io_in_ready,0,0);
-        VL_IN8(__PVT__io_in_valid,0,0);
-        VL_IN8(__PVT__io_in_bits_roundingMode,2,0);
-        VL_IN8(__PVT__io_in_bits_a_inter_valid,0,0);
-        VL_IN8(__PVT__io_in_bits_b_inter_valid,0,0);
-        VL_IN8(__PVT__io_in_bits_a_inter_flags_isNaN,0,0);
-        VL_IN8(__PVT__io_in_bits_a_inter_flags_isInf,0,0);
-        VL_IN8(__PVT__io_in_bits_b_inter_flags_isNaN,0,0);
-        VL_IN8(__PVT__io_in_bits_b_inter_flags_isInf,0,0);
-        VL_IN8(__PVT__io_out_ready,0,0);
-        VL_OUT8(__PVT__io_out_valid,0,0);
+        CData/*0:0*/ __PVT__farPath_io_in_a_sign;
         CData/*7:0*/ __PVT__farPath_io_in_a_exp;
         CData/*7:0*/ __PVT__farPath_io_in_b_exp;
         CData/*0:0*/ __PVT__farPath_io_in_addSig;
@@ -38,19 +28,15 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*7:0*/ __PVT__diffExp;
         CData/*0:0*/ __PVT__closePathSel;
         CData/*0:0*/ __PVT__special_path_hasNaN;
-        CData/*0:0*/ __PVT__rmin;
         CData/*4:0*/ __PVT__farPath__DOT__shiftRightJam_io_shamt;
         CData/*0:0*/ __PVT__farPath__DOT__far_path_rounder_io_cout;
         CData/*7:0*/ __PVT__farPath__DOT__resultExpNoRound;
-        CData/*0:0*/ __PVT__farPath__DOT__far_path_tininess_rounder__DOT__rounder_io_signIn;
-        CData/*0:0*/ __PVT__farPath__DOT__far_path_tininess_rounder__DOT__rounder__DOT__inexact;
-        CData/*0:0*/ __PVT__farPath__DOT__far_path_rounder__DOT__inexact;
         CData/*0:0*/ __PVT__farPath__DOT__far_path_rounder__DOT__r_up;
         CData/*7:0*/ __PVT__closePath__DOT__resultExpNoRound;
         CData/*0:0*/ __PVT__closePath__DOT__shiftLimit;
         CData/*7:0*/ __PVT__closePath__DOT__sigShiftNum;
         CData/*7:0*/ __PVT__closePath__DOT__near_path_exp_rounded;
-        CData/*0:0*/ __PVT__closePath__DOT___io_out_result_T_3;
+        CData/*0:0*/ __PVT__closePath__DOT___io_out_result_T_1;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector_io_y;
         CData/*4:0*/ __PVT__closePath__DOT__lza__DOT__io_lzc_lzc_io_out;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT___f_0_T_10;
@@ -80,8 +66,6 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT__f_12;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT___f_13_T_7;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT__f_13;
-    };
-    struct {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT___f_14_T_7;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT__f_14;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT___f_15_T_7;
@@ -96,6 +80,8 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT__f_19;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT___f_20_T_7;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT__f_20;
+    };
+    struct {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT___f_21_T_7;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT__f_21;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__preEncoder__DOT___f_22_T_7;
@@ -146,8 +132,6 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*0:0*/ closePath__DOT__lza__DOT__preEncoder__DOT____VdfgTmp_h2d854375__0;
         CData/*0:0*/ closePath__DOT__lza__DOT__preEncoder__DOT____VdfgTmp_hc1ddae5e__0;
         CData/*0:0*/ closePath__DOT__lza__DOT__preEncoder__DOT____VdfgTmp_h2d8119da__0;
-    };
-    struct {
         CData/*0:0*/ closePath__DOT__lza__DOT__preEncoder__DOT____VdfgTmp_hc1de2a81__0;
         CData/*0:0*/ closePath__DOT__lza__DOT__preEncoder__DOT____VdfgTmp_h2dacef2f__0;
         CData/*0:0*/ closePath__DOT__lza__DOT__preEncoder__DOT____VdfgTmp_hc1e5c2f4__0;
@@ -162,6 +146,8 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*1:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_5_io_out_0;
         CData/*1:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_5_io_out_2;
         CData/*1:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_1_io_out_0;
+    };
+    struct {
         CData/*1:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_1_io_out_2;
         CData/*1:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_8_io_out_0;
         CData/*1:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_8_io_out_2;
@@ -212,8 +198,6 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node__DOT__pout_0;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node__DOT__pout_1;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node__DOT__zout_0;
-    };
-    struct {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node__DOT__zout_1;
         CData/*0:0*/ closePath__DOT__lza__DOT__errorDetector__DOT__y_node__DOT____VdfgTmp_h4b5b1e37__0;
         CData/*0:0*/ closePath__DOT__lza__DOT__errorDetector__DOT__y_node__DOT____VdfgTmp_h2627e8d8__0;
@@ -228,6 +212,8 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_2__DOT__zout_0;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_2__DOT__zout_1;
         CData/*0:0*/ closePath__DOT__lza__DOT__errorDetector__DOT__y_node_2__DOT____VdfgTmp_h4b5b1e37__0;
+    };
+    struct {
         CData/*0:0*/ closePath__DOT__lza__DOT__errorDetector__DOT__y_node_2__DOT____VdfgTmp_h2627e8d8__0;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_3__DOT__pout_0;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_3__DOT__pout_1;
@@ -278,8 +264,6 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_2__DOT__zout_0;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_2__DOT__zout_1;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_11__DOT__pout_0;
-    };
-    struct {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_11__DOT__pout_1;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_11__DOT__zout_0;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_11__DOT__zout_1;
@@ -294,6 +278,8 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_3__DOT__pout_0;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_3__DOT__pout_1;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_3__DOT__zout_0;
+    };
+    struct {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_3__DOT__zout_1;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_14__DOT__pout_0;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node_14__DOT__pout_1;
@@ -311,7 +297,6 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_5__DOT__zout_0;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_5__DOT__zout_1;
         CData/*0:0*/ __PVT__closePath__DOT__lza__DOT__errorDetector__DOT__y_node0_6__DOT___pout_1_T_7;
-        CData/*0:0*/ __PVT__closePath__DOT__near_path_tininess_rounder__DOT__rounder_io_signIn;
         CData/*0:0*/ __PVT__closePath__DOT__near_path_rounder__DOT__r_up;
         CData/*0:0*/ __VdfgTmp_h8093e782__0;
         CData/*0:0*/ __VdfgTmp_h4411a1c1__0;
@@ -329,9 +314,9 @@ class alignas(VL_CACHE_LINE_BYTES) VTop_FADD final : public VerilatedModule {
         IData/*23:0*/ __PVT__farPath_io_in_b_sig;
         IData/*23:0*/ __PVT__raw_a_sig;
         IData/*23:0*/ __PVT__raw_b_sig;
-        IData/*26:0*/ __PVT__farPath__DOT__far_path_tininess_rounder_io_in_sig;
         IData/*26:0*/ __PVT__farPath__DOT___neg_sigB_T;
         IData/*27:0*/ __PVT__farPath__DOT__result_sig_raw;
+        IData/*26:0*/ __PVT__farPath__DOT__resultSigNoRound;
         IData/*24:0*/ __PVT__closePath__DOT__lza_io_b;
         IData/*25:0*/ __PVT__closePath__DOT__resultSigComplementForm;
         IData/*24:0*/ __PVT__closePath__DOT__resultSigNoRound;

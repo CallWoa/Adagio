@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/TensorCore.iml" filepath="$PROJECT_DIR$/.idea/modules/TensorCore.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/TensorCore-build.iml" filepath="$PROJECT_DIR$/.idea/modules/TensorCore-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/TensorCore.TensorCore-build.iml" filepath="$PROJECT_DIR$/.idea/modules/TensorCore.TensorCore-build.iml" />
     </modules>
   </component>
 </project>

@@ -15,11 +15,14 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , reset{vlSymsp->TOP.reset}
     , io_in_ready{vlSymsp->TOP.io_in_ready}
     , io_in_valid{vlSymsp->TOP.io_in_valid}
+    , io_in_bits_ctrl_flush{vlSymsp->TOP.io_in_bits_ctrl_flush}
+    , io_in_bits_ctrl_matASel{vlSymsp->TOP.io_in_bits_ctrl_matASel}
     , io_in_bits_ctrl_matBSel{vlSymsp->TOP.io_in_bits_ctrl_matBSel}
     , io_in_bits_ctrl_mixPcMode{vlSymsp->TOP.io_in_bits_ctrl_mixPcMode}
-    , io_in_bits_ctrl_roundingMode{vlSymsp->TOP.io_in_bits_ctrl_roundingMode}
+    , io_in_bits_decode_src{vlSymsp->TOP.io_in_bits_decode_src}
     , io_out_ready{vlSymsp->TOP.io_out_ready}
     , io_out_valid{vlSymsp->TOP.io_out_valid}
+    , io_out_bits_decode_src{vlSymsp->TOP.io_out_bits_decode_src}
     , io_in_bits_tc0_ot0_tg0_matrix_a{vlSymsp->TOP.io_in_bits_tc0_ot0_tg0_matrix_a}
     , io_in_bits_tc0_ot0_tg0_matrix_b{vlSymsp->TOP.io_in_bits_tc0_ot0_tg0_matrix_b}
     , io_in_bits_tc0_ot0_tg0_matrix_c{vlSymsp->TOP.io_in_bits_tc0_ot0_tg0_matrix_c}
@@ -52,10 +55,14 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , io_out_bits_tc1_octet0_threadgroup4_matrix_d_data{vlSymsp->TOP.io_out_bits_tc1_octet0_threadgroup4_matrix_d_data}
     , io_out_bits_tc1_octet1_threadgroup0_matrix_d_data{vlSymsp->TOP.io_out_bits_tc1_octet1_threadgroup0_matrix_d_data}
     , io_out_bits_tc1_octet1_threadgroup4_matrix_d_data{vlSymsp->TOP.io_out_bits_tc1_octet1_threadgroup4_matrix_d_data}
-    , __PVT__Top__DOT__tc__DOT__ot{vlSymsp->TOP.__PVT__Top__DOT__tc__DOT__ot}
-    , __PVT__Top__DOT__tc__DOT__ot_1{vlSymsp->TOP.__PVT__Top__DOT__tc__DOT__ot_1}
-    , __PVT__Top__DOT__tc_1__DOT__ot{vlSymsp->TOP.__PVT__Top__DOT__tc_1__DOT__ot}
-    , __PVT__Top__DOT__tc_1__DOT__ot_1{vlSymsp->TOP.__PVT__Top__DOT__tc_1__DOT__ot_1}
+    , __PVT__Top__DOT__tc__DOT__ot__DOT__tg{vlSymsp->TOP.__PVT__Top__DOT__tc__DOT__ot__DOT__tg}
+    , __PVT__Top__DOT__tc__DOT__ot__DOT__tg_1{vlSymsp->TOP.__PVT__Top__DOT__tc__DOT__ot__DOT__tg_1}
+    , __PVT__Top__DOT__tc__DOT__ot_1__DOT__tg{vlSymsp->TOP.__PVT__Top__DOT__tc__DOT__ot_1__DOT__tg}
+    , __PVT__Top__DOT__tc__DOT__ot_1__DOT__tg_1{vlSymsp->TOP.__PVT__Top__DOT__tc__DOT__ot_1__DOT__tg_1}
+    , __PVT__Top__DOT__tc_1__DOT__ot__DOT__tg{vlSymsp->TOP.__PVT__Top__DOT__tc_1__DOT__ot__DOT__tg}
+    , __PVT__Top__DOT__tc_1__DOT__ot__DOT__tg_1{vlSymsp->TOP.__PVT__Top__DOT__tc_1__DOT__ot__DOT__tg_1}
+    , __PVT__Top__DOT__tc_1__DOT__ot_1__DOT__tg{vlSymsp->TOP.__PVT__Top__DOT__tc_1__DOT__ot_1__DOT__tg}
+    , __PVT__Top__DOT__tc_1__DOT__ot_1__DOT__tg_1{vlSymsp->TOP.__PVT__Top__DOT__tc_1__DOT__ot_1__DOT__tg_1}
     , rootp{&(vlSymsp->TOP)}
 {
     // Register model with the context

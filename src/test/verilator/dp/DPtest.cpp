@@ -72,7 +72,6 @@ int main(int argc, char** argv, char** env) {
     unsigned long long dut_result, dut_fflags;
 
 
-    dut.io_in_bits_roundingMode = 0;
     dut.io_out_ready = 1;
     uint64_t cnt = 0;
     uint64_t error = 0;
@@ -118,7 +117,6 @@ int main(int argc, char** argv, char** env) {
         dut.eval();
         
         dut_result = dut.io_out_bits_result;
-        dut_fflags = dut.io_out_bits_fflags;
         unsigned long long ref_result_hex;  
         ref_result_hex = ((unsigned long long*) &ref_result)[0];
         pipeline.write(ref_result_hex);     
@@ -134,7 +132,7 @@ int main(int argc, char** argv, char** env) {
 	                sim_time++;
 	            } 
                 //打印 V-mode 运行结果 以及 C-Mode 运行参考结果
-                printf("[%ld] dut_result: %lx dut_fflags: %lx\n", cnt, dut_result, dut_fflags); 
+                printf("[%ld] dut_result: %lx \n", cnt, dut_result); 
                 printf("[%ld] ref_result: %lx \n", cnt, pipeline_data);
                 error ++;
                 m_trace->close();

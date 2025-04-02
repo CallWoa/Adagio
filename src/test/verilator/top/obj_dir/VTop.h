@@ -13,7 +13,7 @@
 class VTop__Syms;
 class VTop___024root;
 class VerilatedVcdC;
-class VTop_Octet;
+class VTop_Threadgroup;
 
 
 // This class is the main interface to the Verilated model
@@ -31,11 +31,14 @@ class alignas(VL_CACHE_LINE_BYTES) VTop VL_NOT_FINAL : public VerilatedModel {
     VL_IN8(&reset,0,0);
     VL_OUT8(&io_in_ready,0,0);
     VL_IN8(&io_in_valid,0,0);
+    VL_IN8(&io_in_bits_ctrl_flush,0,0);
+    VL_IN8(&io_in_bits_ctrl_matASel,0,0);
     VL_IN8(&io_in_bits_ctrl_matBSel,0,0);
     VL_IN8(&io_in_bits_ctrl_mixPcMode,0,0);
-    VL_IN8(&io_in_bits_ctrl_roundingMode,0,0);
+    VL_IN8(&io_in_bits_decode_src,4,0);
     VL_IN8(&io_out_ready,0,0);
     VL_OUT8(&io_out_valid,0,0);
+    VL_OUT8(&io_out_bits_decode_src,4,0);
     VL_INW(&io_in_bits_tc0_ot0_tg0_matrix_a,255,0,8);
     VL_INW(&io_in_bits_tc0_ot0_tg0_matrix_b,255,0,8);
     VL_INW(&io_in_bits_tc0_ot0_tg0_matrix_c,255,0,8);
@@ -72,10 +75,14 @@ class alignas(VL_CACHE_LINE_BYTES) VTop VL_NOT_FINAL : public VerilatedModel {
     // CELLS
     // Public to allow access to /* verilator public */ items.
     // Otherwise the application code can consider these internals.
-    VTop_Octet* const __PVT__Top__DOT__tc__DOT__ot;
-    VTop_Octet* const __PVT__Top__DOT__tc__DOT__ot_1;
-    VTop_Octet* const __PVT__Top__DOT__tc_1__DOT__ot;
-    VTop_Octet* const __PVT__Top__DOT__tc_1__DOT__ot_1;
+    VTop_Threadgroup* const __PVT__Top__DOT__tc__DOT__ot__DOT__tg;
+    VTop_Threadgroup* const __PVT__Top__DOT__tc__DOT__ot__DOT__tg_1;
+    VTop_Threadgroup* const __PVT__Top__DOT__tc__DOT__ot_1__DOT__tg;
+    VTop_Threadgroup* const __PVT__Top__DOT__tc__DOT__ot_1__DOT__tg_1;
+    VTop_Threadgroup* const __PVT__Top__DOT__tc_1__DOT__ot__DOT__tg;
+    VTop_Threadgroup* const __PVT__Top__DOT__tc_1__DOT__ot__DOT__tg_1;
+    VTop_Threadgroup* const __PVT__Top__DOT__tc_1__DOT__ot_1__DOT__tg;
+    VTop_Threadgroup* const __PVT__Top__DOT__tc_1__DOT__ot_1__DOT__tg_1;
 
     // Root instance pointer to allow access to model internals,
     // including inlined /* verilator public_flat_* */ items.

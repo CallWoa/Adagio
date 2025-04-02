@@ -22,26 +22,26 @@ package object TensorCore {
 
   class Matrix(val bit: Int) extends Bundle {
     val data = UInt(bit.W)
-    def readsca(x_in: Int, y: Int, ftype: Option[FType] = None,
-             nrow: Option[Int] = None): UInt = {
-      val width = if(ftype.isDefined) ftype.get.len else fp16.len
-      val i = if(nrow.isDefined) nrow.get else 4
-      val j = bit / (i * width)
-      val x = if(x_in >= i) 0 else x_in
-      val msb = width*(i*j-(x*j+y)) - 1
-      val lsb = msb - width + 1
-      this.data(msb, lsb)
-    }
+//    def readsca(x_in: Int, y: Int, ftype: Option[FType] = None,
+//             nrow: Option[Int] = None): UInt = {
+//      val width = if(ftype.isDefined) ftype.get.len else fp16.len
+//      val i = if(nrow.isDefined) nrow.get else 4
+//      val j = bit / (i * width)
+//      val x = if(x_in >= i) 0 else x_in
+//      val msb = width*(i*j-(x*j+y)) - 1
+//      val lsb = msb - width + 1
+//      this.data(msb, lsb)
+//    }
     def readvec(x: Int, ftype: Option[FType] = None,
              nrow: Option[Int] = None): Vec[UInt] = {
       val width = if (ftype.isDefined) ftype.get.len else fp16.len
-      val i = if (nrow.isDefined) nrow.get else 4
-      val j = bit / (i * width)
-      val vec = Wire(Vec(j, UInt(width.W)))
-      for (n <- 0 until  j){
-        val msb = width * (i * j - x * j) - 1 - width * n
-        val lsb = width * (i * j - x * j) - 1 - width * n - (width - 1)
-        vec(n) := this.data(msb, lsb)
+      val rows = if (nrow.isDefined) nrow.get else 4
+      val cols = bit / (rows * width)
+      val vec = Wire(Vec(cols, UInt(width.W)))
+      for (j <- 0 until  cols){
+        val lsb = width * (x * cols + j)
+        val msb = lsb + width - 1
+        vec(j) := this.data(msb, lsb)
       }
       vec
     }
@@ -63,17 +63,17 @@ package object TensorCore {
         val matVType = Wire(Vec(rows, Vec(cols, UInt(width.W))))
         def transpose (mat: Vec[Vec[UInt]]) : Vec[UInt] = {
           val mat_T = Wire(Vec(nelem, UInt(width.W)))
-          for (x <- 0 until rows){
-            for(y <- 0 until cols){
-              val n = nelem - 1 - (y * cols + x)
-              mat_T(n) := mat(x)(y)
+          for (i <- 0 until rows){
+            for(j <- 0 until cols){
+              val n = i * cols + j
+              mat_T(n) := mat(j)(i)
             }
           }
           mat_T
         }
         for (i <- 0 until rows){
           for (j <- 0 until cols){
-            val n = nelem - 1 - (i * cols + j)
+            val n = i * cols + j
             matVType(i)(j) := d(width * (n + 1) - 1, width * n)
           }
         }
@@ -99,6 +99,42 @@ package object TensorCore {
       res_boxed(i) := Cat(~0.U(16.W), x(i)(15, 0))
     }
     res_boxed
+  }
+
+  class PipelineReg[T <: Data](gen: T) extends Module {
+    val io = IO(new Bundle {
+      val in  = Flipped(Decoupled(gen))
+      val out = Decoupled(gen)
+      val flush = Input(Bool())
+    })
+    val validReg = RegInit(false.B)
+    val dataReg  = Reg(gen)
+
+    when(io.out.ready) {
+      validReg := false.B
+    }
+    when(io.in.fire) {
+      validReg := true.B
+      dataReg  := io.in.bits
+    }
+    when(io.flush){
+      validReg := false.B
+    }
+    io.in.ready := !validReg || io.out.ready
+    io.out.valid := validReg
+    io.out.bits  := dataReg
+  }
+
+  object PipelineReg {
+    def apply[T <: Data](gen: T, data: T, in_valid: Bool, out_ready: Bool, flush: Bool) = {
+      val pipeline_reg = Module(new PipelineReg(gen))
+      pipeline_reg.io.in.valid := in_valid
+      pipeline_reg.io.in.bits := data
+      pipeline_reg.io.out.ready := out_ready
+      pipeline_reg.io.flush := flush
+
+      (pipeline_reg.io.out.bits, pipeline_reg.io.out.valid, pipeline_reg.io.in.ready)
+    }
   }
 }
 

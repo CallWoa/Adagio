@@ -26,10 +26,10 @@ VL_ATTR_COLD void VDotProdUnit___024root___eval_triggers__stl(VDotProdUnit___024
 }
 
 VL_ATTR_COLD void VDotProdUnit___024root___stl_sequent__TOP__0(VDotProdUnit___024root* vlSelf);
-VL_ATTR_COLD void VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__faddModule__0(VDotProdUnit_FADD* vlSelf);
-VL_ATTR_COLD void VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__faddModule_1__0(VDotProdUnit_FADD* vlSelf);
-VL_ATTR_COLD void VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__faddModule_2__0(VDotProdUnit_FADD* vlSelf);
-void VDotProdUnit___024root___ico_sequent__TOP__1(VDotProdUnit___024root* vlSelf);
+VL_ATTR_COLD void VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__addResult_0_faddModule__0(VDotProdUnit_FADD* vlSelf);
+VL_ATTR_COLD void VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__addResult_1_faddModule__0(VDotProdUnit_FADD* vlSelf);
+VL_ATTR_COLD void VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__addResult_0_faddModule_1__0(VDotProdUnit_FADD* vlSelf);
+VL_ATTR_COLD void VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__fadd_final_res_faddModule__0(VDotProdUnit_FADD* vlSelf);
 
 VL_ATTR_COLD void VDotProdUnit___024root___eval_stl(VDotProdUnit___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
@@ -41,9 +41,9 @@ VL_ATTR_COLD void VDotProdUnit___024root___eval_stl(VDotProdUnit___024root* vlSe
         vlSelf->__Vm_traceActivity[2U] = 1U;
         vlSelf->__Vm_traceActivity[1U] = 1U;
         vlSelf->__Vm_traceActivity[0U] = 1U;
-        VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__faddModule__0((&vlSymsp->TOP__DotProdUnit__DOT__faddModule));
-        VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__faddModule_1__0((&vlSymsp->TOP__DotProdUnit__DOT__faddModule_1));
-        VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__faddModule_2__0((&vlSymsp->TOP__DotProdUnit__DOT__faddModule_2));
-        VDotProdUnit___024root___ico_sequent__TOP__1(vlSelf);
+        VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__addResult_0_faddModule__0((&vlSymsp->TOP__DotProdUnit__DOT__addResult_0_faddModule));
+        VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__addResult_1_faddModule__0((&vlSymsp->TOP__DotProdUnit__DOT__addResult_1_faddModule));
+        VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__addResult_0_faddModule_1__0((&vlSymsp->TOP__DotProdUnit__DOT__addResult_0_faddModule_1));
+        VDotProdUnit_FADD___stl_sequent__TOP__DotProdUnit__DOT__fadd_final_res_faddModule__0((&vlSymsp->TOP__DotProdUnit__DOT__fadd_final_res_faddModule));
     }
 }

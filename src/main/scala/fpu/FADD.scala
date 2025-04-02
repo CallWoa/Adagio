@@ -12,13 +12,10 @@ class FarPath(val expWidth: Int, val sigWidth: Int, val outSigWidth: Int)
       val addSig = Bool()
       val tinyAdd = Bool()
       val shiftNum = UInt(log2Ceil(sigWidth).W)
-      val roundingMode = UInt(3.W)
     })
     val out = Output(new Bundle() {
       val result = UInt((expWidth + outSigWidth).W)
       val far_path_of = Bool()
-      val far_path_ix = Bool()
-      val far_path_uf = Bool()
     })
   })
   val shiftNum = io.in.shiftNum
@@ -28,10 +25,8 @@ class FarPath(val expWidth: Int, val sigWidth: Int, val outSigWidth: Int)
   val bothZero = aIsZero & bIsZero
   val result_sign = io.in.a.sign
   val (alignedSigB, sigB_sticky) = ShiftRightJam(Cat(io.in.b.sig, 0.U(2.W)), shiftNum)
-  //  val alignedSigB = Cat(io.in.b.sig, 0.U(2.W)) >> shiftNum
-  //  val sigB_sticky = (Cat(io.in.b.sig, 0.U(2.W)).tail(sigWidth + 2 - shiftNum) & ((1 << shiftNum) - 1).U).orR
   val pos_sigB = Cat(0.U(1.W), alignedSigB, sigB_sticky)
-  val neg_sigB = Cat(1.U(1.W), ~Cat(alignedSigB, sigB_sticky) + 1.U)
+  val neg_sigB = Cat(1.U(1.W), (~Cat(alignedSigB, sigB_sticky)).asUInt + 1.U)
   val adder_in_sigB = Mux(io.in.addSig, pos_sigB, neg_sigB)
   val adder_in_sigA = Cat(0.U(1.W), io.in.a.sig, 0.U(3.W))
   val resultSigInNormalCase = adder_in_sigA + adder_in_sigB
@@ -57,47 +52,28 @@ class FarPath(val expWidth: Int, val sigWidth: Int, val outSigWidth: Int)
       (borrow || tinyAdd) -> (io.in.a.exp - 1.U)
     )
   )
-  //    Mux1H(
-  //    Seq(cout, keep||tinyAdd, borrow && (!tinyAdd)),
-  //    Seq(
-  //      io.in.a.exp + 1.U,
-  //      io.in.a.exp,
-  //      io.in.a.exp - 1.U
-  //    )
-  //  )
+
   val farPathResult = Wire(new RawFloat(expWidth, outSigWidth + 3))
   farPathResult.exp  := resultExpNoRound
   farPathResult.sign := result_sign
   farPathResult.sig  := resultSigNoRound
 
-  val far_path_tininess_rounder = Module(new TininessRounder(expWidth, outSigWidth))
-  far_path_tininess_rounder.io.in := farPathResult
-  far_path_tininess_rounder.io.rm := io.in.roundingMode
-  val far_path_tininess = tinyAdd && far_path_tininess_rounder.io.tininess
-
   val far_path_rounder = RoundingUnit(
     in = resultSigNoRound.tail(1),
-    rm = io.in.roundingMode,
     sign = result_sign,
     width = outSigWidth - 1
   )
 
-  val far_path_exp_rounded = far_path_rounder.io.cout + resultExpNoRound
-  val far_path_sig_rounded = far_path_rounder.io.out
-
   val far_path_may_of = io.in.b.exp.andR && io.in.addSig
-  //  val far_path_may_uf = far_path_out.tininess && !far_path_mul_of
-  val far_path_may_uf = far_path_tininess && !far_path_may_of
-
   val far_path_of_before_round =
     resultExpNoRound === ((BigInt(1) << expWidth) - 1).U
   val far_path_of_after_round = far_path_rounder.io.cout &&
     resultExpNoRound === ((BigInt(1) << expWidth) - 2).U
 
-  io.out.far_path_of :=
-    far_path_of_before_round || far_path_of_after_round || far_path_may_of
-  io.out.far_path_ix := far_path_rounder.io.inexact | io.out.far_path_of
-  io.out.far_path_uf := far_path_may_uf & io.out.far_path_ix
+  io.out.far_path_of := far_path_of_before_round || far_path_of_after_round || far_path_may_of
+
+  val far_path_exp_rounded = far_path_rounder.io.cout + resultExpNoRound
+  val far_path_sig_rounded = far_path_rounder.io.out
 
   io.out.result :=
     Cat(farPathResult.sign, far_path_exp_rounded, far_path_sig_rounded)
@@ -109,13 +85,10 @@ class ClosePath(val expWidth: Int, val sigWidth: Int, val outSigWidth: Int)
     val in = Input(new Bundle() {
       val a, b = new RawFloat(expWidth, sigWidth)
       val needShift = Bool()
-      val roundingMode = Input(UInt(3.W))
     })
     val out = Output(new Bundle() {
       val result = UInt((expWidth + outSigWidth).W)
-      val near_path_of = Bool()
-      val near_path_ix = Bool()
-      val near_path_uf = Bool()
+      val close_path_of = Bool()
     })
   })
   //result calculate
@@ -124,10 +97,10 @@ class ClosePath(val expWidth: Int, val sigWidth: Int, val outSigWidth: Int)
   val bIsZero = !io.in.b.exp.orR
   val resultSigComplementForm = Mux(bIsZero,
     Cat(0.U(1.W), a_sig),
-    Cat(0.U(1.W), a_sig) + Cat(1.U(1.W), ~b_sig + 1.U))
+    Cat(0.U(1.W), a_sig) + Cat(1.U(1.W), (~b_sig).asUInt + 1.U))
   val a_LessThan_b = resultSigComplementForm.head(1).asBool
   val resultSigNoRound = Mux(a_LessThan_b,
-    ~resultSigComplementForm.tail(1) + 1.U,
+    (~resultSigComplementForm.tail(1)).asUInt + 1.U,
     resultSigComplementForm.tail(1))
   val result_sign = Mux(a_LessThan_b, ~io.in.a.sign , io.in.a.sign)
   //leading zero counting
@@ -138,11 +111,9 @@ class ClosePath(val expWidth: Int, val sigWidth: Int, val outSigWidth: Int)
   val lzaError = lza.io.error
   val closePathSigIsZero = lza.io.zero
 
-  // val near_path_res = io.in.near_path_out
   val closePathResult = Wire(new RawFloat(expWidth, outSigWidth + 3))
   closePathResult.sign := result_sign
 
-  // val near_path_sig = near_path_res.sig
   val resultExpNoRound = Mux(closePathSigIsZero, 0.U(expWidth.W), io.in.a.exp)
   val resultExpIsZero = resultExpNoRound === 0.U
 
@@ -171,48 +142,30 @@ class ClosePath(val expWidth: Int, val sigWidth: Int, val outSigWidth: Int)
   val close_path_sig = sig_s3.head(outSigWidth + 2) ## sig_s3.tail(outSigWidth + 2).orR
   closePathResult.sig := close_path_sig
 
-  val near_path_tininess_rounder = Module(new TininessRounder(expWidth, outSigWidth))
-  near_path_tininess_rounder.io.in := closePathResult
-  near_path_tininess_rounder.io.rm := io.in.roundingMode
-  val near_path_tininess = near_path_tininess_rounder.io.tininess
-
   val near_path_rounder = RoundingUnit(
     in = close_path_sig.tail(1),
-    rm = io.in.roundingMode,
     sign = closePathResult.sign,
     width = outSigWidth - 1
   )
 
   val near_path_exp_rounded = near_path_rounder.io.cout + closePathResult.exp
   val near_path_sig_rounded = near_path_rounder.io.out
-  val near_path_zero_sign = io.in.roundingMode === RDN
+  io.out.close_path_of := near_path_exp_rounded === (~0.U(expWidth.W)).asUInt
   io.out.result := Cat(
-    (closePathResult.sign && !closePathSigIsZero) || (near_path_zero_sign && closePathSigIsZero),
+    closePathResult.sign && !closePathSigIsZero,
     near_path_exp_rounded,
     near_path_sig_rounded
   )
-
-  io.out.near_path_of := near_path_exp_rounded === (~0.U(expWidth.W)).asUInt
-  io.out.near_path_ix := near_path_rounder.io.inexact || io.out.near_path_of
-  io.out.near_path_uf := near_path_tininess && io.out.near_path_ix
-
 }
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 class FADDIn (val expWidth: Int, val sigWidth: Int) extends Bundle {
-  val subOp = Output(Bool())
   val a = Output(UInt((expWidth + sigWidth).W))
   val b = Output(UInt((expWidth + sigWidth).W))
-  val roundingMode = Output(UInt(3.W))
-  val a_inter_valid = Output(Bool())
-  val b_inter_valid = Output(Bool())
-  val a_inter_flags = Output(new FMULToFADD_fflags)
-  val b_inter_flags = Output(new FMULToFADD_fflags)
 }
 
 class FADDOut (val expWidth: Int, val sigWidth: Int) extends Bundle {
-  val fflags = Output(UInt(5.W))
   val result = Output(UInt((expWidth + sigWidth).W))
 }
 
@@ -231,8 +184,7 @@ class FADD(expWidth: Int, sigWidth: Int) extends Module
   val raw_a = RawFloat.fromFP(fp_a, Some(decode_a.expNotZero), Some(decode_a.isSubnormal))
   val raw_b = RawFloat.fromFP(fp_b, Some(decode_b.expNotZero), Some(decode_b.isSubnormal))
   //Path Select & Exponent Difference
-  val effSignB = fp_b.sign ^ io.in.bits.subOp
-  val addSig = fp_a.sign === effSignB
+  val addSig = fp_a.sign === fp_b.sign
   val needSwap = raw_a.exp < raw_b.exp
   val diffExp = Mux(needSwap, raw_b.exp - raw_a.exp, raw_a.exp - raw_b.exp)
   //Exponent Align Limit
@@ -250,11 +202,8 @@ class FADD(expWidth: Int, sigWidth: Int) extends Module
   farPath.io.in.addSig := addSig
   farPath.io.in.tinyAdd := decode_a.expIsZero & decode_b.expIsZero
   farPath.io.in.shiftNum := shiftNum
-  farPath.io.in.roundingMode := io.in.bits.roundingMode
   val farPathResult = farPath.io.out.result
   val far_path_of = farPath.io.out.far_path_of
-  val far_path_ix = farPath.io.out.far_path_ix
-  val far_path_uf = farPath.io.out.far_path_uf
   /*------------------------------------------------------------------------
   close Path
    ------------------------------------------------------------------------*/
@@ -262,32 +211,20 @@ class FADD(expWidth: Int, sigWidth: Int) extends Module
   closePath.io.in.a := Mux(needSwap, raw_b, raw_a)
   closePath.io.in.b := Mux(needSwap, raw_a, raw_b)
   closePath.io.in.needShift := initShiftNum === 1.U
-  closePath.io.in.roundingMode := io.in.bits.roundingMode
   val closePathResult = closePath.io.out.result
-  val near_path_of = closePath.io.out.near_path_of
-  val near_path_ix = closePath.io.out.near_path_ix
-  val near_path_uf = closePath.io.out.near_path_uf
+  val close_path_of = closePath.io.out.close_path_of
   /*------------------------------------------------------------------------
   special case
   *------------------------------------------------------------------------*/
-  val a_is_inter = io.in.bits.a_inter_valid
-  val a_flags = io.in.bits.a_inter_flags
-  val a_isNaN = Mux(a_is_inter, a_flags.isNaN, decode_a.isNaN)
-  val a_isSNaN = Mux(a_is_inter, a_flags.isInv, decode_a.isSNaN)
-  val a_isInf = Mux(a_is_inter, a_flags.isInf, decode_a.isInf)
-
-  val b_is_inter = io.in.bits.b_inter_valid
-  val b_flags = io.in.bits.b_inter_flags
-  val b_isNaN = Mux(b_is_inter, b_flags.isNaN, decode_b.isNaN)
-  val b_isSNaN = Mux(b_is_inter, b_flags.isInv, decode_b.isSNaN)
-  val b_isInf = Mux(b_is_inter, b_flags.isInf, decode_b.isInf)
+  val a_isNaN = decode_a.isNaN
+  val a_isInf = decode_a.isInf
+  val b_isNaN = decode_b.isNaN
+  val b_isInf = decode_b.isInf
 
   val special_path_hasNaN = a_isNaN || b_isNaN
-  val special_path_hasSNaN = a_isSNaN || b_isSNaN
   val special_path_hasInf = a_isInf || b_isInf
   val special_path_inf_iv = a_isInf && b_isInf && !addSig
   val special_case_happen = special_path_hasNaN || special_path_hasInf
-  val special_path_iv = special_path_hasSNaN || special_path_inf_iv
 
   val special_path_result = Mux(
     special_path_hasNaN || special_path_inf_iv,
@@ -298,33 +235,15 @@ class FADD(expWidth: Int, sigWidth: Int) extends Module
       0.U((sigWidth - 1).W)
     )
   )
-  val special_path_fflags = Cat(special_path_iv, 0.U(4.W))
   /*------------------------------------------------------------------------
   result
   *------------------------------------------------------------------------*/
   val common_overflow_sign =
     Mux(closePathSel, closePathResult.head(1).asBool, farPathResult.head(1).asBool)
-  val rmin = RoundingUnit.is_rmin(io.in.bits.roundingMode, farPathResult.head(1).asBool)
-  val common_overflow_exp = Mux(
-    rmin,
-    ((BigInt(1) << expWidth) - 2).U(expWidth.W),
-    ((BigInt(1) << expWidth) - 1).U(expWidth.W)
-  )
-  val common_overflow_sig =
-    Mux(rmin, Fill(sigWidth - 1, 1.U(1.W)), 0.U((sigWidth - 1).W))
-  val common_overflow =
-    !closePathSel && far_path_of || closePathSel && near_path_of
-  val common_underflow =
-    !closePathSel && far_path_uf || closePathSel && near_path_uf
-  val common_inexact =
-    !closePathSel && far_path_ix || closePathSel && near_path_ix
-  val common_fflags = Cat(
-    false.B,
-    false.B,
-    common_overflow,
-    common_underflow,
-    common_inexact
-  )
+
+  val common_overflow_exp = ((BigInt(1) << expWidth) - 1).U(expWidth.W)
+  val common_overflow_sig = 0.U((sigWidth - 1).W)
+  val common_overflow = !closePathSel && far_path_of || closePathSel && close_path_of
 
   io.in.ready := ready
   io.out.valid := valid
@@ -337,46 +256,24 @@ class FADD(expWidth: Int, sigWidth: Int) extends Module
       Mux(closePathSel, closePathResult, farPathResult)
     )
   )
-  io.out.bits.fflags := Mux(special_case_happen, special_path_fflags, common_fflags)
 }
 
 object FADD {
-  def apply(a: UInt, b: UInt, rm: UInt,
-            expWidth: Int, sigWidth: Int,
-            pre_valid: Bool, post_ready: Bool,
-            a_inter_valid: Bool, b_inter_valid: Bool,
-            a_inter_flags: Option[FMULToFADD_fflags] = None,
-            b_inter_flags: Option[FMULToFADD_fflags] = None) = {
+  def apply(a: UInt, b: UInt,
+            expWidth: Int, sigWidth: Int) = {
     require((a.getWidth <= expWidth + sigWidth) && (b.getWidth <= expWidth + sigWidth))
 
     val faddModule = Module(new FADD(expWidth, sigWidth))
 
-    val prehandshaked = pre_valid && faddModule.io.in.ready
-    val valid = RegInit(false.B)
-    when(faddModule.io.out.valid && post_ready) {
-      valid := false.B
-    }
-    when(prehandshaked) {
-      valid := true.B
-    }
+    val a_pad = if (a.getWidth < expWidth + sigWidth) padd_tail(a, expWidth + sigWidth) else a
+    val b_pad = if (b.getWidth < expWidth + sigWidth) padd_tail(b, expWidth + sigWidth) else b
 
-    val a_pad = if(a.getWidth < expWidth + sigWidth) padd_tail(a, expWidth + sigWidth) else a
-    val b_pad = if(b.getWidth < expWidth + sigWidth) padd_tail(b, expWidth + sigWidth) else b
-    val a_flag = if(a_inter_flags.isDefined) RegEnable(a_inter_flags.get, prehandshaked) else DontCare
-    val b_flag = if(b_inter_flags.isDefined) RegEnable(b_inter_flags.get, prehandshaked) else DontCare
+    faddModule.io.in.valid := DontCare
+    faddModule.io.in.bits.a := a_pad
+    faddModule.io.in.bits.b := b_pad
+    faddModule.io.out.ready := DontCare
 
-    faddModule.io.in.valid := valid
-    faddModule.io.in.bits.subOp := false.B
-    faddModule.io.in.bits.a := RegEnable(a_pad, prehandshaked)
-    faddModule.io.in.bits.b := RegEnable(b_pad, prehandshaked)
-    faddModule.io.in.bits.roundingMode := rm
-    faddModule.io.in.bits.a_inter_valid := a_inter_valid
-    faddModule.io.in.bits.b_inter_valid := b_inter_valid
-    faddModule.io.in.bits.a_inter_flags := a_flag
-    faddModule.io.in.bits.b_inter_flags := b_flag
-    faddModule.io.out.ready := post_ready
-
-    (faddModule.io.out.bits.result, faddModule.io.out.bits.fflags, faddModule.io.out.valid, faddModule.io.in.ready)
+    faddModule.io.out.bits.result
   }
   def padd_tail(x: UInt, w: Int): UInt = Cat(x, 0.U((w - x.getWidth).W))
 }

@@ -4,26 +4,11 @@ import chisel3._
 import chisel3.util._
 import fpu.lza_utils._
 
-//abstract class FPConverter(
-//                            val inExpWidth:   Int,
-//                            val inPrecision:  Int,
-//                            val outExpWidth:  Int,
-//                            val outPrecision: Int)
-//  extends Module {
-//  val io = IO(new Bundle() {
-//    val in = Input(UInt((inExpWidth + inPrecision).W))
-//    val rm = Input(UInt(3.W))
-//    val result = Output(UInt((outExpWidth + outPrecision).W))
-//    val fflags = Output(UInt(5.W))
-//  })
-//}
-
 class FPConverterIn(
                      val inExpWidth:   Int,
                      val inSigWidth:   Int
                    ) extends Bundle {
     val in = Input(UInt((inExpWidth + inSigWidth).W))
-    val roundingMode = Input(UInt(3.W))
 }
 
 class FPConverterOut(
@@ -31,42 +16,7 @@ class FPConverterOut(
                      val outSigWidth:  Int
                    ) extends Bundle {
   val result = Output(UInt((outExpWidth + outSigWidth).W))
-  val fflags = Output(UInt(5.W))
 }
-
-//class FPToFP(
-//              inExpWidth:   Int,
-//              inSigWidth:   Int,
-//              outExpWidth:  Int,
-//              outSigWidth:  Int
-//            ) extends FPConverter(inExpWidth, inSigWidth, outExpWidth, outSigWidth) {
-//
-//  val down_cvt = (inExpWidth > outExpWidth) && (inSigWidth > outSigWidth)
-//  val up_cvt = (inExpWidth < outExpWidth) && (inSigWidth < outSigWidth)
-//  require(down_cvt || up_cvt)
-//
-//  val converter = if (down_cvt) {
-//    Module(
-//      new FPDownConverter(
-//        inExpWidth,
-//        inSigWidth,
-//        outExpWidth,
-//        outSigWidth
-//      )
-//    )
-//  } else {
-//    Module(
-//      new FPUpConverter(
-//        inExpWidth,
-//        inSigWidth,
-//        outExpWidth,
-//        outSigWidth
-//      )
-//    )
-//  }
-//
-//  io <> converter.io
-//}
 
 class FPDownConverter(
                        inExpWidth:   Int,
@@ -86,7 +36,6 @@ class FPDownConverter(
     FloatPoint.expBias(inExpWidth) - FloatPoint.expBias(outExpWidth)
   val fp_in = FloatPoint.fromUInt(io.in.bits.in, inExpWidth, inSigWidth)
   val decode = fp_in.decode
-  val raw_in = RawFloat.fromFP(fp_in, Some(decode.expNotZero))
   val resultExpNoRound = fp_in.exp.zext - diffExp.S
 
   /*
@@ -101,7 +50,6 @@ class FPDownConverter(
   normal_rounder.io.roundIn := normal_roundBit
   normal_rounder.io.stickyIn := normal_stickyBit
   normal_rounder.io.signIn := fp_in.sign
-  normal_rounder.io.rm := io.in.bits.roundingMode
 
   val normal_sig_rounded = normal_rounder.io.out
   val normal_exp_rounded = Mux(normal_rounder.io.cout, resultExpNoRound + 1.S, resultExpNoRound)
@@ -110,9 +58,6 @@ class FPDownConverter(
     resultExpNoRound > (FloatPoint.maxNormExp(outExpWidth) - 1).S,
     resultExpNoRound > FloatPoint.maxNormExp(outExpWidth).S
   )
-  val expUnderflow = Mux(normal_rounder.io.cout, resultExpNoRound < 0.S, resultExpNoRound < 1.S)
-  val normal_ix = normal_rounder.io.inexact || expOverflow
-
   /*------------------------------------------------------------------------
   Subnormal Path
    ------------------------------------------------------------------------*/
@@ -127,27 +72,15 @@ class FPDownConverter(
   subnormal_rounder.io.roundIn := subnormal_sig(0)
   subnormal_rounder.io.stickyIn := subnormal_sitckyBit
   subnormal_rounder.io.signIn := fp_in.sign
-  subnormal_rounder.io.rm := io.in.bits.roundingMode
   val subnormal_sig_rounded = subnormal_rounder.io.out
   val subnormal_exp_rounded = Mux(subnormal_rounder.io.cout, 1.U, 0.U)
-  val subnormal_ix = subnormal_rounder.io.inexact
 
   val mayBeSubnormal = resultExpNoRound < 1.S
   /*------------------------------------------------------------------------
   Normal Result
    ------------------------------------------------------------------------*/
-  val rmin =
-    io.in.bits.roundingMode === RTZ || (io.in.bits.roundingMode === RDN && !fp_in.sign) || (io.in.bits.roundingMode === RUP && fp_in.sign)
-  val normal_of_exp = Mux(
-    rmin,
-    ((BigInt(1) << outExpWidth) - 2).U(outExpWidth.W),
-    ((BigInt(1) << outExpWidth) - 1).U(outExpWidth.W)
-  )
-  val normal_of_sig = Mux(
-    rmin,
-    ~0.U((outSigWidth - 1).W),
-    0.U((outSigWidth - 1).W)
-  )
+   val normal_of_exp = ((BigInt(1) << outExpWidth) - 1).U(outExpWidth.W)
+  val normal_of_sig = 0.U((outSigWidth - 1).W)
   val common_exp = Mux1H(
     Seq(
       !mayBeSubnormal && expOverflow,
@@ -172,22 +105,11 @@ class FPDownConverter(
       subnormal_sig_rounded
     )
   )
-  /*------------------------------------------------------------------------
-  Special Case
-   ------------------------------------------------------------------------*/
-  val special_case = decode.expIsOnes // NaN or Inf
 
-  val iv = decode.isSNaN
-  val dz = false.B
-  val of = !special_case && expOverflow
-  val uf = !special_case && mayBeSubnormal && expUnderflow && subnormal_ix
-  val ix = !special_case && (
-    (!mayBeSubnormal && normal_ix) ||
-      (mayBeSubnormal && subnormal_ix)
-  )
   /*------------------------------------------------------------------------
   Final Result
    ------------------------------------------------------------------------*/
+  val special_case = decode.expIsOnes // NaN or Inf
   val result = Cat(
     !decode.isNaN && fp_in.sign,
     Mux1H(
@@ -206,32 +128,19 @@ class FPDownConverter(
   io.in.ready := io.out.ready
   io.out.valid := valid
   io.out.bits.result := result
-  io.out.bits.fflags := Cat(iv, dz, of, uf, ix)
-
 }
 
 object FPDownConverter {
-  def apply(in: UInt, rm: UInt,
+  def apply(in: UInt,
             inExpWidth: Int, inSigWidth: Int,
-            outExpWidth: Int, outSigWidth: Int,
-            pre_valid: Bool, post_ready: Bool) = {
+            outExpWidth: Int, outSigWidth: Int) = {
     require((inExpWidth >= outExpWidth) && (inSigWidth >= outSigWidth))
 
     val fcvt = Module(new FPDownConverter(inExpWidth, inSigWidth, outExpWidth, outSigWidth))
 
-    val prehandshaked = pre_valid && fcvt.io.in.ready
-    val valid = RegInit(false.B)
-    when(fcvt.io.out.valid && post_ready) {
-      valid := false.B
-    }
-    when(prehandshaked) {
-      valid := true.B
-    }
-
-    fcvt.io.in.valid := valid
-    fcvt.io.in.bits.in := RegEnable(in, prehandshaked)
-    fcvt.io.in.bits.roundingMode := rm
-    fcvt.io.out.ready := post_ready
+    fcvt.io.in.valid := DontCare
+    fcvt.io.in.bits.in := in
+    fcvt.io.out.ready := DontCare
 
     (fcvt.io.out.bits, fcvt.io.out.valid, fcvt.io.in.ready)
   }
@@ -296,37 +205,22 @@ class FPUpConverter(
     )
   )
 
-  val fflags = Cat(decode_in.isSNaN, 0.U(4.W))
-
   io.in.ready := io.out.ready
   io.out.valid := valid
   io.out.bits.result := result
-  io.out.bits.fflags := fflags
 }
 
 object FPUpConverter {
   def apply(in: UInt,
             inExpWidth: Int, inSigWidth: Int,
-            outExpWidth: Int, outSigWidth: Int,
-            pre_valid: Bool, post_ready: Bool) = {
+            outExpWidth: Int, outSigWidth: Int) = {
     require((inExpWidth <= outExpWidth) && (inSigWidth <= outSigWidth))
 
     val fcvt = Module(new FPUpConverter(inExpWidth, inSigWidth, outExpWidth, outSigWidth))
 
-//    val prehandshaked = pre_valid && fcvt.io.in.ready
-//    val valid = RegInit(false.B)
-//    when(fcvt.io.out.valid && post_ready) {
-//      valid := false.B
-//    }
-//    when(prehandshaked) {
-//      valid := true.B
-//    }
-
-    fcvt.io.in.valid := pre_valid
-//    fcvt.io.in.bits.in := RegEnable(in, prehandshaked)
+    fcvt.io.in.valid := DontCare
     fcvt.io.in.bits.in := in
-    fcvt.io.in.bits.roundingMode := DontCare
-    fcvt.io.out.ready := post_ready
+    fcvt.io.out.ready := DontCare
 
     (fcvt.io.out.bits, fcvt.io.out.valid, fcvt.io.in.ready)
   }

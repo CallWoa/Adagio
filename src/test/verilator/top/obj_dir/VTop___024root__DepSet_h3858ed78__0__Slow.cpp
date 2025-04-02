@@ -51,7 +51,7 @@ VL_ATTR_COLD void VTop___024root___eval_settle(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
                 VTop___024root___dump_triggers__stl(vlSelf);
 #endif
-                VL_FATAL_MT("Top.v", 3305, "", "Settle region did not converge.");
+                VL_FATAL_MT("Top.v", 3690, "", "Settle region did not converge.");
             }
             vlSelf->__VstlIterCount = ((IData)(1U) 
                                        + vlSelf->__VstlIterCount);
@@ -153,9 +153,11 @@ VL_ATTR_COLD void VTop___024root___ctor_var_reset(VTop___024root* vlSelf) {
     VL_RAND_RESET_W(256, vlSelf->io_in_bits_tc1_ot1_tg4_matrix_a);
     VL_RAND_RESET_W(256, vlSelf->io_in_bits_tc1_ot1_tg4_matrix_b);
     VL_RAND_RESET_W(256, vlSelf->io_in_bits_tc1_ot1_tg4_matrix_c);
+    vlSelf->io_in_bits_ctrl_flush = VL_RAND_RESET_I(1);
+    vlSelf->io_in_bits_ctrl_matASel = VL_RAND_RESET_I(1);
     vlSelf->io_in_bits_ctrl_matBSel = VL_RAND_RESET_I(1);
     vlSelf->io_in_bits_ctrl_mixPcMode = VL_RAND_RESET_I(1);
-    vlSelf->io_in_bits_ctrl_roundingMode = VL_RAND_RESET_I(1);
+    vlSelf->io_in_bits_decode_src = VL_RAND_RESET_I(5);
     vlSelf->io_out_ready = VL_RAND_RESET_I(1);
     vlSelf->io_out_valid = VL_RAND_RESET_I(1);
     VL_RAND_RESET_W(256, vlSelf->io_out_bits_tc0_octet0_threadgroup0_matrix_d_data);
@@ -166,14 +168,11 @@ VL_ATTR_COLD void VTop___024root___ctor_var_reset(VTop___024root* vlSelf) {
     VL_RAND_RESET_W(256, vlSelf->io_out_bits_tc1_octet0_threadgroup4_matrix_d_data);
     VL_RAND_RESET_W(256, vlSelf->io_out_bits_tc1_octet1_threadgroup0_matrix_d_data);
     VL_RAND_RESET_W(256, vlSelf->io_out_bits_tc1_octet1_threadgroup4_matrix_d_data);
-    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc__DOT__ot_io_in_bits_threadgroup0_matrix_b_data);
-    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc__DOT__ot_io_in_bits_threadgroup4_matrix_b_data);
-    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc__DOT__ot_1_io_in_bits_threadgroup0_matrix_b_data);
-    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc__DOT__ot_1_io_in_bits_threadgroup4_matrix_b_data);
-    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc_1__DOT__ot_io_in_bits_threadgroup0_matrix_b_data);
-    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc_1__DOT__ot_io_in_bits_threadgroup4_matrix_b_data);
-    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc_1__DOT__ot_1_io_in_bits_threadgroup0_matrix_b_data);
-    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc_1__DOT__ot_1_io_in_bits_threadgroup4_matrix_b_data);
+    vlSelf->io_out_bits_decode_src = VL_RAND_RESET_I(5);
+    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc__DOT__ot__DOT__tg_io_in_bits_matrix_b_data);
+    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc__DOT__ot_1__DOT__tg_io_in_bits_matrix_b_data);
+    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc_1__DOT__ot__DOT__tg_io_in_bits_matrix_b_data);
+    VL_RAND_RESET_W(256, vlSelf->Top__DOT__tc_1__DOT__ot_1__DOT__tg_io_in_bits_matrix_b_data);
     vlSelf->__Vtrigprevexpr___TOP__clock__0 = VL_RAND_RESET_I(1);
     for (int __Vi0 = 0; __Vi0 < 3; ++__Vi0) {
         vlSelf->__Vm_traceActivity[__Vi0] = 0;

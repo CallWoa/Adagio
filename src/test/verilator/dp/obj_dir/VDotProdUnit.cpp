@@ -15,10 +15,15 @@ VDotProdUnit::VDotProdUnit(VerilatedContext* _vcontextp__, const char* _vcname__
     , reset{vlSymsp->TOP.reset}
     , io_in_ready{vlSymsp->TOP.io_in_ready}
     , io_in_valid{vlSymsp->TOP.io_in_valid}
-    , io_in_bits_roundingMode{vlSymsp->TOP.io_in_bits_roundingMode}
+    , io_in_bits_flush{vlSymsp->TOP.io_in_bits_flush}
+    , io_in_bits_ctrl_mixPc{vlSymsp->TOP.io_in_bits_ctrl_mixPc}
+    , io_in_bits_ctrl_rowtag{vlSymsp->TOP.io_in_bits_ctrl_rowtag}
+    , io_in_bits_ctrl_decode_src{vlSymsp->TOP.io_in_bits_ctrl_decode_src}
     , io_out_ready{vlSymsp->TOP.io_out_ready}
     , io_out_valid{vlSymsp->TOP.io_out_valid}
-    , io_out_bits_fflags{vlSymsp->TOP.io_out_bits_fflags}
+    , io_out_bits_ctrl_mixPc{vlSymsp->TOP.io_out_bits_ctrl_mixPc}
+    , io_out_bits_ctrl_rowtag{vlSymsp->TOP.io_out_bits_ctrl_rowtag}
+    , io_out_bits_ctrl_decode_src{vlSymsp->TOP.io_out_bits_ctrl_decode_src}
     , io_in_bits_vec_a_0{vlSymsp->TOP.io_in_bits_vec_a_0}
     , io_in_bits_vec_a_1{vlSymsp->TOP.io_in_bits_vec_a_1}
     , io_in_bits_vec_a_2{vlSymsp->TOP.io_in_bits_vec_a_2}
@@ -27,10 +32,12 @@ VDotProdUnit::VDotProdUnit(VerilatedContext* _vcontextp__, const char* _vcname__
     , io_in_bits_vec_b_1{vlSymsp->TOP.io_in_bits_vec_b_1}
     , io_in_bits_vec_b_2{vlSymsp->TOP.io_in_bits_vec_b_2}
     , io_in_bits_vec_b_3{vlSymsp->TOP.io_in_bits_vec_b_3}
+    , io_in_bits_c{vlSymsp->TOP.io_in_bits_c}
     , io_out_bits_result{vlSymsp->TOP.io_out_bits_result}
-    , __PVT__DotProdUnit__DOT__faddModule{vlSymsp->TOP.__PVT__DotProdUnit__DOT__faddModule}
-    , __PVT__DotProdUnit__DOT__faddModule_1{vlSymsp->TOP.__PVT__DotProdUnit__DOT__faddModule_1}
-    , __PVT__DotProdUnit__DOT__faddModule_2{vlSymsp->TOP.__PVT__DotProdUnit__DOT__faddModule_2}
+    , __PVT__DotProdUnit__DOT__addResult_0_faddModule{vlSymsp->TOP.__PVT__DotProdUnit__DOT__addResult_0_faddModule}
+    , __PVT__DotProdUnit__DOT__addResult_1_faddModule{vlSymsp->TOP.__PVT__DotProdUnit__DOT__addResult_1_faddModule}
+    , __PVT__DotProdUnit__DOT__addResult_0_faddModule_1{vlSymsp->TOP.__PVT__DotProdUnit__DOT__addResult_0_faddModule_1}
+    , __PVT__DotProdUnit__DOT__fadd_final_res_faddModule{vlSymsp->TOP.__PVT__DotProdUnit__DOT__fadd_final_res_faddModule}
     , rootp{&(vlSymsp->TOP)}
 {
     // Register model with the context
